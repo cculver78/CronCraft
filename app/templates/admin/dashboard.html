@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard — CronCraft™{% endblock %}
+
+{% block content %}
+<section>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <div class="section-label">Admin Panel</div>
+            <h2>Dashboard</h2>
+        </div>
+        <a href="{{ url_for('admin.users') }}" class="btn-primary">Manage Users</a>
+    </div>
+
+    <!-- Stat Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 3rem;">
+        <div class="terminal" style="padding: 1.25rem;">
+            <div class="t-muted" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Total Users</div>
+            <div style="font-size: 2rem; font-weight: 700; font-family: var(--serif); color: var(--text);">{{ total_users }}</div>
+        </div>
+        <div class="terminal" style="padding: 1.25rem;">
+            <div class="t-muted" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Total Jobs</div>
+            <div style="font-size: 2rem; font-weight: 700; font-family: var(--serif); color: var(--text);">{{ total_jobs }}</div>
+        </div>
+        <div class="terminal" style="padding: 1.25rem;">
+            <div class="t-muted" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Active Jobs</div>
+            <div style="font-size: 2rem; font-weight: 700; font-family: var(--serif); color: var(--green);">{{ active_jobs }}</div>
+        </div>
+        <div class="terminal" style="padding: 1.25rem;">
+            <div class="t-muted" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Failed Jobs</div>
+            <div style="font-size: 2rem; font-weight: 700; font-family: var(--serif); color: var(--red);">{{ failed_jobs }}</div>
+        </div>
+        <div class="terminal" style="padding: 1.25rem;">
+            <div class="t-muted" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Late Jobs</div>
+            <div style="font-size: 2rem; font-weight: 700; font-family: var(--serif); color: var(--amber);">{{ late_jobs }}</div>
+        </div>
+        <div class="terminal" style="padding: 1.25rem;">
+            <div class="t-muted" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">Alerts Today</div>
+            <div style="font-size: 2rem; font-weight: 700; font-family: var(--serif); color: var(--amber);">{{ alerts_today }}</div>
+        </div>
+    </div>
+
+    <!-- Recent Signups -->
+    <div class="terminal">
+        <div class="terminal-bar">
+            <div class="tb-dot tb-red"></div>
+            <div class="tb-dot tb-amber"></div>
+            <div class="tb-dot tb-green"></div>
+            <span class="terminal-title">recent signups</span>
+        </div>
+        <div class="terminal-body">
+            {% if not recent_users %}
+            <div class="t-muted">No users yet.</div>
+            {% else %}
+            <div class="job-grid" style="border-top: none; padding-top: 0; margin-top: 0;">
+                {% for user in recent_users %}
+                <a href="{{ url_for('admin.user_detail', id=user.id) }}" class="job-row" style="text-decoration: none; color: inherit;">
+                    <div>
+                        <div class="job-name">{{ user.email }}</div>
+                        <div class="job-schedule">
+                            {{ user.display_name or user.username or '—' }}
+                            &mdash; joined <span class="local-time" data-utc="{{ user.created_at.isoformat() }}Z">{{ user.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span class="status-pill" style="background: rgba(34,197,94,0.12); color: var(--green); font-size: 9px;">{{ user.plan|upper }}</span>
+                        {% if user.email_verified %}
+                            <span class="status-pill status-ok" style="font-size: 9px;">VERIFIED</span>
+                        {% else %}
+                            <span class="status-pill status-late" style="font-size: 9px;">UNVERIFIED</span>
+                        {% endif %}
+                        {% if user.is_admin %}
+                            <span class="status-pill" style="background: rgba(245,158,11,0.12); color: var(--amber); font-size: 9px;">ADMIN</span>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

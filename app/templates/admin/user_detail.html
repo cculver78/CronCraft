@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.email }} — Admin — CronCraft™{% endblock %}
+
+{% block content %}
+<section>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <div class="section-label">Admin Panel</div>
+            <h2>User Detail</h2>
+        </div>
+        <a href="{{ url_for('admin.users') }}" class="btn-ghost">← Back to Users</a>
+    </div>
+
+    <!-- User Profile Card -->
+    <div class="terminal" style="margin-bottom: 2rem;">
+        <div class="terminal-bar">
+            <div class="tb-dot tb-red"></div>
+            <div class="tb-dot tb-amber"></div>
+            <div class="tb-dot tb-green"></div>
+            <span class="terminal-title">user profile — {{ user.email }}</span>
+        </div>
+        <div class="terminal-body">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px 2rem; font-size: 12px;">
+                <div>
+                    <span class="t-muted">Email:</span>
+                    <span>{{ user.email }}</span>
+                </div>
+                <div>
+                    <span class="t-muted">Username:</span>
+                    <span>{{ user.username or '—' }}</span>
+                </div>
+                <div>
+                    <span class="t-muted">Display Name:</span>
+                    <span>{{ user.display_name or '—' }}</span>
+                </div>
+                <div>
+                    <span class="t-muted">Timezone:</span>
+                    <span>{{ user.timezone }}</span>
+                </div>
+                <div>
+                    <span class="t-muted">Plan:</span>
+                    <span class="status-pill" style="background: rgba(34,197,94,0.12); color: var(--green); font-size: 9px;">{{ user.plan|upper }}</span>
+                    {% if user.grace_period_end %}
+                        <span class="status-pill" style="background: rgba(245,158,11,0.12); color: var(--amber); font-size: 9px; margin-left: 4px;">PAST DUE</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <span class="t-muted">Verified:</span>
+                    {% if user.email_verified %}
+                        <span class="status-pill status-ok" style="font-size: 9px;">YES</span>
+                    {% else %}
+                        <span class="status-pill status-late" style="font-size: 9px;">NO</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <span class="t-muted">Plan Started:</span>
+                    <span class="local-time" data-utc="{{ plan_started.isoformat() }}Z">{{ plan_started.strftime('%Y-%m-%d') }}</span>
+                </div>
+                <div>
+                    <span class="t-muted">Plan Ends:</span>
+                    {% if plan_ends %}
+                        <span class="local-time" data-utc="{{ plan_ends.isoformat() }}Z">{{ plan_ends.strftime('%Y-%m-%d') }}</span>
+                    {% elif user.plan != 'free' %}
+                        <span style="color: var(--green);">Admin Managed</span>
+                    {% else %}
+                        <span style="color: var(--text-dim);">—</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <span class="t-muted">Admin:</span>
+                    {% if user.is_admin %}
+                        <span class="status-pill" style="background: rgba(245,158,11,0.12); color: var(--amber); font-size: 9px;">YES</span>
+                    {% else %}
+                        <span style="color: var(--text-dim);">No</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <span class="t-muted">Joined:</span>
+                    <span class="local-time" data-utc="{{ user.created_at.isoformat() }}Z">{{ user.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+                </div>
+                {% if user.grace_period_end %}
+                <div style="grid-column: 1 / -1; margin-top: 4px;">
+                    <span class="t-muted">Grace Period Ends:</span>
+                    <span style="color: var(--amber);"><span class="local-time" data-utc="{{ user.grace_period_end.isoformat() }}Z">{{ user.grace_period_end.strftime('%Y-%m-%d %H:%M UTC') }}</span></span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Actions -->
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                <a href="{{ url_for('admin.user_edit', id=user.id) }}" class="btn-primary" style="padding: 6px 14px; font-size: 11px; line-height: 1.4; display: inline-flex; align-items: center;">Edit User</a>
+                <form action="{{ url_for('admin.impersonate', id=user.id) }}" method="POST" style="display:inline; margin: 0;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-ghost" style="padding: 6px 14px; font-size: 11px; line-height: 1.4; display: inline-flex; align-items: center;">Impersonate</button>
+                </form>
+                <form action="{{ url_for('admin.user_delete', id=user.id) }}" method="POST" style="display:inline; margin: 0;" onsubmit="return confirm('Are you sure you want to permanently delete this user and all their data?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-ghost" style="border-color: rgba(239, 68, 68, 0.4); color: var(--red); padding: 6px 14px; font-size: 11px; line-height: 1.4; display: inline-flex; align-items: center;">Delete User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- User's Jobs -->
+    <div class="terminal" style="margin-bottom: 2rem;">
+        <div class="terminal-bar">
+            <div class="tb-dot tb-red"></div>
+            <div class="tb-dot tb-amber"></div>
+            <div class="tb-dot tb-green"></div>
+            <span class="terminal-title">jobs ({{ pagination.total }})</span>
+        </div>
+        <div class="terminal-body">
+            {% if not jobs %}
+            <div class="t-muted">This user has no jobs.</div>
+            {% else %}
+            <div class="job-grid" style="border-top: none; padding-top: 0; margin-top: 0;">
+                {% for job in jobs %}
+                <div class="job-row">
+                    <div>
+                        <div class="job-name">{{ job.name }}</div>
+                        <div class="job-schedule">{{ job.schedule }}
+                            &mdash;
+                            {% if job.last_ping_at %}
+                                pinged <span class="local-time" data-utc="{{ job.last_ping_at.isoformat() }}Z">{{ job.last_ping_at.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+                            {% else %}
+                                never pinged
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        {% if not job.is_active %}
+                            <span class="status-pill" style="background: var(--bg3); color: var(--text-dim);">PAUSED</span>
+                        {% elif job.last_status == 'ok' %}
+                            <span class="status-pill status-ok">OK</span>
+                        {% elif job.last_status == 'late' %}
+                            <span class="status-pill status-late">LATE</span>
+                        {% elif job.last_status == 'failed' %}
+                            <span class="status-pill status-dead">FAILED</span>
+                        {% else %}
+                            <span class="status-pill" style="background: var(--bg3); color: var(--text-dim);">WAITING</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% include 'partials/_pagination.html' %}
+
+    <!-- Recent Alerts -->
+    <div class="terminal">
+        <div class="terminal-bar">
+            <div class="tb-dot tb-red"></div>
+            <div class="tb-dot tb-amber"></div>
+            <div class="tb-dot tb-green"></div>
+            <span class="terminal-title">recent alerts ({{ recent_alerts|length }})</span>
+        </div>
+        <div class="terminal-body">
+            {% if not recent_alerts %}
+            <div class="t-muted">No alerts for this user.</div>
+            {% else %}
+            <div class="job-grid" style="border-top: none; padding-top: 0; margin-top: 0;">
+                {% for alert in recent_alerts %}
+                <div class="job-row">
+                    <div>
+                        <div class="job-name">
+                            {% if alert.alert_type == 'missed' %}
+                                <span class="t-err">MISSED</span>
+                            {% elif alert.alert_type == 'recovered' %}
+                                <span class="t-ok">RECOVERED</span>
+                            {% else %}
+                                <span class="t-warn">{{ alert.alert_type|upper }}</span>
+                            {% endif %}
+                             — Job #{{ alert.job_id }}
+                        </div>
+                        <div class="job-schedule">
+                            via {{ alert.sent_via }}
+                            &mdash; <span class="local-time" data-utc="{{ alert.created_at.isoformat() }}Z">{{ alert.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

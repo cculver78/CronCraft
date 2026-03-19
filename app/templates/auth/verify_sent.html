@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Your Email — CronCraft™{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="form-title">Check your email</h2>
+    <p class="form-sub">We sent a verification link to <strong>{{ email }}</strong>. Click the link to activate your account.</p>
+    
+    <p style="color: var(--text-dim); font-size: 12px; margin-top: 1.5rem; line-height: 1.7;">
+        Didn't receive the email? Check your spam folder, or
+    </p>
+    
+    <form method="POST" action="{{ url_for('auth.resend_verification') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="email" value="{{ email }}">
+        <button type="submit" class="btn-primary btn-submit" style="margin-top: 0.75rem;">Resend Verification Email</button>
+    </form>
+    
+    <div class="auth-links">
+        <a href="{{ url_for('auth.login') }}">Back to Sign In</a>
+    </div>
+</div>
+{% endblock %}

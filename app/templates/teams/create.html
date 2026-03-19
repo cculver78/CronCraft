@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Create Team &mdash; CronCraft{% endblock %}
+
+{% block content %}
+<div class="form-container">
+  <h1 class="form-title">Create Team</h1>
+  <p class="form-sub">Set up a new space to collaborate on jobs.</p>
+
+  <form method="POST" action="{{ url_for('teams.create') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
+    <div class="form-group">
+      <label class="form-label" for="name">Team Name</label>
+      <input type="text" id="name" name="name" class="form-input" required autofocus placeholder="e.g. DevOps, Backend Team">
+    </div>
+
+    <button type="submit" class="btn-primary btn-submit">Create Team</button>
+  </form>
+  
+  <div class="auth-links" style="margin-top: 2rem;">
+    <a href="{{ url_for('teams.index') }}">&larr; Back to Teams</a>
+  </div>
+</div>
+{% endblock %}

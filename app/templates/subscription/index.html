@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Subscription — CronCraft™{% endblock %}
+
+{% block content %}
+<section>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2>Subscription</h2>
+            <p class="section-sub" style="margin-bottom: 0;">Your current plan and usage</p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            {% if current_user.plan in ['pro', 'team'] or current_user.stripe_customer_id %}
+            <form action="{{ url_for('stripe_routes.portal') }}" method="POST" style="margin: 0;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn-ghost" style="padding: 6px 12px; font-size: 11px; line-height: 1.4; display: inline-flex; align-items: center;">Manage Subscription</button>
+            </form>
+            {% endif %}
+            <a href="{{ url_for('dashboard.index') }}" class="btn-ghost" style="padding: 6px 12px; font-size: 11px; line-height: 1.4; display: inline-flex; align-items: center;">&larr; Dashboard</a>
+        </div>
+    </div>
+
+    <div class="terminal">
+        <div class="terminal-bar">
+            <div class="tb-dot tb-red"></div>
+            <div class="tb-dot tb-amber"></div>
+            <div class="tb-dot tb-green"></div>
+            <span class="terminal-title">croncraft &mdash; subscription</span>
+        </div>
+        <div class="terminal-body">
+            {% if current_user.grace_period_end %}
+            <div style="background: rgba(245,158,11,0.1); border: 1px solid var(--amber); border-radius: 6px; padding: 12px 16px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 18px;">⚠</span>
+                <div>
+                    <div style="color: var(--amber); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Payment Past Due</div>
+                    <div class="t-muted" style="font-size: 11px; margin-top: 2px;">
+                        Your payment failed. Your plan will be downgraded to Free on
+                        <span class="local-time" data-utc="{{ current_user.grace_period_end.isoformat() }}Z">{{ current_user.grace_period_end.strftime('%Y-%m-%d') }}</span>
+                        unless you update your payment method.
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem;">
+
+                <!-- Plan Info -->
+                <div>
+                    <div class="t-prompt" style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">Current Plan</div>
+                    <div style="font-size: 28px; font-family: var(--serif); font-weight: 600; color: var(--text); margin-bottom: 4px;">
+                        {{ current_user.plan|capitalize }}
+                    </div>
+                    {% if current_user.plan == 'free' %}
+                        <div class="t-muted" style="font-size: 11px;">No payment required</div>
+                    {% else %}
+                        <div class="t-ok" style="font-size: 11px;">Active</div>
+                    {% endif %}
+                </div>
+
+                <!-- Plan Started -->
+                <div>
+                    <div class="t-prompt" style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">Plan Started</div>
+                    <div style="font-size: 16px; color: var(--text);">
+                        <span class="local-time" data-utc="{{ plan_started.isoformat() }}Z">{{ plan_started.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                    <div class="t-prompt" style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 10px; margin-bottom: 4px;">Member Since</div>
+                    <div style="font-size: 13px; color: var(--text);">
+                        <span class="local-time" data-utc="{{ current_user.created_at.isoformat() }}Z">{{ current_user.created_at.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                </div>
+
+                <!-- Plan Ends -->
+                <div>
+                    <div class="t-prompt" style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">Plan Ends</div>
+                    {% if plan_ends %}
+                    <div style="font-size: 16px; color: var(--text);">
+                        <span class="local-time" data-utc="{{ plan_ends.isoformat() }}Z">{{ plan_ends.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                    <div class="t-muted" style="font-size: 11px; margin-top: 4px;">Next billing cycle</div>
+                    {% else %}
+                    {% if current_user.plan != 'free' %}
+                    <div style="font-size: 16px; color: var(--text);">∞</div>
+                    <div class="t-muted" style="font-size: 11px; margin-top: 4px;">Admin Managed</div>
+                    {% else %}
+                    <div style="font-size: 16px; color: var(--text);">&mdash;</div>
+                    <div class="t-muted" style="font-size: 11px; margin-top: 4px;">No active subscription</div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--border); margin: 1.5rem 0;">
+
+            <!-- Usage Stats -->
+            <div class="t-prompt" style="font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;">Usage</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+
+                <div style="background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 1rem;">
+                    <div class="t-muted" style="font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px;">Jobs</div>
+                    <div style="font-size: 20px; font-family: var(--serif); font-weight: 600; color: var(--text);">
+                        {{ job_count }}{% if limits.max_jobs %} <span class="t-muted" style="font-size: 12px; font-family: var(--mono);">/ {{ limits.max_jobs }}</span>{% endif %}
+                    </div>
+                    {% if limits.max_jobs is none %}
+                        <div class="t-ok" style="font-size: 10px; margin-top: 4px;">Unlimited</div>
+                    {% elif job_count >= limits.max_jobs %}
+                        <div class="t-err" style="font-size: 10px; margin-top: 4px;">Limit reached</div>
+                    {% else %}
+                        <div class="t-muted" style="font-size: 10px; margin-top: 4px;">{{ limits.max_jobs - job_count }} remaining</div>
+                    {% endif %}
+                </div>
+
+                <div style="background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 1rem;">
+                    <div class="t-muted" style="font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px;">Run History</div>
+                    <div style="font-size: 20px; font-family: var(--serif); font-weight: 600; color: var(--text);">
+                        {{ limits.history_days }}<span class="t-muted" style="font-size: 12px; font-family: var(--mono);"> days</span>
+                    </div>
+                    <div class="t-muted" style="font-size: 10px; margin-top: 4px;">Retention window</div>
+                </div>
+
+                <div style="background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 1rem;">
+                    <div class="t-muted" style="font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px;">Alerts</div>
+                    <div style="font-size: 20px; font-family: var(--serif); font-weight: 600; color: var(--text);">
+                        Email
+                    </div>
+                    <div class="t-muted" style="font-size: 10px; margin-top: 4px;">
+                        {% if current_user.plan == 'free' %}Email only{% else %}Email, Slack, Webhook{% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            {% if current_user.plan == 'free' %}
+            <hr style="border: none; border-top: 1px solid var(--border); margin: 1.5rem 0;">
+            <div style="text-align: center;">
+                <div class="t-muted" style="font-size: 12px; margin-bottom: 8px;">Need more jobs or longer history?</div>
+                <div style="display: flex; justify-content: center; gap: 12px;">
+                    <form action="{{ url_for('stripe_routes.checkout') }}" method="POST" style="margin: 0;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="plan" value="pro">
+                        <button type="submit" class="btn-primary" style="padding: 8px 16px; font-size: 11px;">Upgrade to Pro &mdash; $19/mo</button>
+                    </form>
+                    <form action="{{ url_for('stripe_routes.checkout') }}" method="POST" style="margin: 0;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="plan" value="team">
+                        <button type="submit" class="btn-ghost" style="padding: 8px 16px; font-size: 11px;">Upgrade to Team &mdash; $49/mo</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="hero">
+  <div class="hero-copy">
+    <div class="hero-tag">
+      <span class="hero-tag-dot"></span>
+      Production-ready cron monitoring
+    </div>
+    <h1>Your jobs are <em>failing</em><br>right now.</h1>
+    <p class="hero-sub">Cron jobs are silent killers. They stop, they fail, they hang — and nobody knows until the
+      damage is done. CronCraft&trade; watches so you don't have to.</p>
+    <div class="cta-group">
+      <a href="{{ url_for('auth.register') }}" class="btn-primary">Get started free</a>
+      <a href="#" class="btn-ghost">Self-host on GitHub (coming soon)</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="tb-dot tb-red"></div>
+        <div class="tb-dot tb-amber"></div>
+        <div class="tb-dot tb-green"></div>
+        <span class="terminal-title">croncraft — dashboard</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="t-prompt">$</span> <span class="t-cmd">croncraft status --all</span></div>
+        <br>
+        <div class="t-muted">Checking 6 monitored jobs...</div>
+        <br>
+        <div class="job-grid">
+          <div class="job-row">
+            <div>
+              <div class="job-name">db-backup</div>
+              <div class="job-schedule">0 2 * * * — pinged 2m ago</div>
+            </div>
+            <span class="status-pill status-ok">OK</span>
+          </div>
+          <div class="job-row">
+            <div>
+              <div class="job-name">invoice-generator</div>
+              <div class="job-schedule">0 9 1 * * — pinged 3h ago</div>
+            </div>
+            <span class="status-pill status-ok">OK</span>
+          </div>
+          <div class="job-row">
+            <div>
+              <div class="job-name">report-builder</div>
+              <div class="job-schedule">*/15 * * * * — expected 4m ago</div>
+            </div>
+            <span class="status-pill status-late">LATE</span>
+          </div>
+          <div class="job-row">
+            <div>
+              <div class="job-name">s3-sync</div>
+              <div class="job-schedule">0 * * * * — pinged 58m ago</div>
+            </div>
+            <span class="status-pill status-ok">OK</span>
+          </div>
+          <div class="job-row">
+            <div>
+              <div class="job-name">cleanup-tempfiles</div>
+              <div class="job-schedule">0 3 * * 0 — last seen 9d ago</div>
+            </div>
+            <span class="status-pill status-dead">FAILED</span>
+          </div>
+        </div>
+        <br>
+        <div class="t-warn">[!] alert dispatched: cleanup-tempfiles has not pinged in 9 days</div>
+        <div class="t-err">[!] alert dispatched: report-builder is 4m past grace period</div>
+        <br>
+        <div><span class="t-prompt">$</span> <span class="blink">_</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<section>
+  <p class="section-label">Features</p>
+  <h2>Everything you need.<br><em>Nothing you don't.</em></h2>
+  <p class="section-sub">No agents to install. No daemons to manage. One curl at the end of your script is all it takes.
+  </p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⊙</div>
+      <div class="feature-title">Dead man's switch</div>
+      <p class="feature-desc">Jobs ping CronCraft&trade; when they complete. No ping by the deadline — you get an alert. Works
+        with any server, any script, any language.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">◷</div>
+      <div class="feature-title">Grace periods</div>
+      <p class="feature-desc">Set a configurable buffer for slow jobs. CronCraft&trade; waits the full grace period before
+        declaring a miss. No false alarms at 3am.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡&#xFE0E;</div>
+      <div class="feature-title">Instant alerts</div>
+      <p class="feature-desc">Email on every tier. Slack and webhook integrations on Pro+. Get notified the moment a job
+        goes late, not the moment someone notices.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⟶</div>
+      <div class="feature-title">Dependency chains</div>
+      <p class="feature-desc">Job B only runs if Job A succeeded. CronCraft&trade; tracks the relationship and alerts you if
+        the chain breaks anywhere. Pro feature.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">◈</div>
+      <div class="feature-title">Run history</div>
+      <p class="feature-desc">Every ping is logged. See timing, duration, IP, and status for every execution. Know
+        exactly when things stopped working and why.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⬡</div>
+      <div class="feature-title">Self-hosted (coming soon)</div>
+      <p class="feature-desc">Full Docker compose setup. Own your data, your infrastructure, your monitoring stack. No
+        subscriptions required if you run it yourself.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="how">
+  <div class="how-it-works">
+    <div>
+      <p class="section-label">How it works</p>
+      <h2>One ping.<br><em>All the peace of mind.</em></h2>
+      <p class="section-sub">No agents. No config files on your server. No vendor lock-in. Add one line to your existing
+        script and CronCraft&trade; does the rest.</p>
+      <div class="step-list">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div>
+            <div class="step-title">Register your job</div>
+            <p class="step-desc">Give your job a name, paste in the cron expression, and set a grace period. CronCraft&trade;
+              gives you a unique ping URL.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div>
+            <div class="step-title">Add one line to your script</div>
+            <p class="step-desc">Curl the ping URL at the end of your job. That's it. The URL works from any server, any
+              language, any environment.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div>
+            <div class="step-title">Get alerted when it matters</div>
+            <p class="step-desc">If the ping doesn't arrive by the expected time plus grace period, CronCraft&trade; fires an
+              alert. If it recovers, you get that too.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="code-block">
+      <pre style="margin: 0; font-family: inherit;">
+<span class="t-comment">#!/bin/bash
+# backup.sh — runs daily at 2am</span>
+
+<span class="t-comment"># ... your actual job logic ...</span>
+pg_dump mydb | gzip > <span class="t-ok">/backup/db-$(date +%F).sql.gz</span>
+aws s3 cp <span class="t-ok">/backup/db-$(date +%F).sql.gz</span> \
+  s3://my-bucket/backups/
+
+<span class="t-comment"># Ping CronCraft on success.
+# If this line never runs, you'll know.</span>
+curl -fsS <span class="t-ok">https://croncraft.app/ping/abc123xyz</span> \
+  > /dev/null
+
+<span class="t-comment"># That's it. CronCraft handles the rest.</span>
+</pre>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="pricing">
+  <p class="section-label">Pricing</p>
+  <h2>Start free.<br><em>Pay when it matters.</em></h2>
+  <p class="section-sub">The free tier is actually useful. Self-hosted (coming soon) is always free. No credit card required to start.
+  </p>
+  <div class="pricing-grid">
+    <div class="plan-card">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">$0 <span>/ month</span></div>
+      <div class="plan-desc">For side projects and getting started.</div>
+      <hr class="plan-divider">
+      <ul class="plan-features">
+        <li class="plan-feature has">10 monitored jobs</li>
+        <li class="plan-feature has">7 days run history</li>
+        <li class="plan-feature has">Email alerts</li>
+        <li class="plan-feature">Slack / webhook alerts</li>
+        <li class="plan-feature">Dependency chains</li>
+        <li class="plan-feature">Multi-user</li>
+      </ul>
+      <a href="{{ url_for('auth.register') }}" class="plan-btn ghost">Start free</a>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-badge">Most popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">$19 <span>/ month</span></div>
+      <div class="plan-desc">For teams that can't afford silent failures.</div>
+      <hr class="plan-divider">
+      <ul class="plan-features">
+        <li class="plan-feature has">Unlimited jobs</li>
+        <li class="plan-feature has">90 days run history</li>
+        <li class="plan-feature has">Email alerts</li>
+        <li class="plan-feature has">Slack / webhook alerts</li>
+        <li class="plan-feature has">Dependency chains</li>
+        <li class="plan-feature">Multi-user</li>
+      </ul>
+      {% if current_user.is_authenticated %}
+          <form action="{{ url_for('stripe_routes.checkout') }}" method="POST" style="margin: 0; width: 100%;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="plan" value="pro">
+              <button type="submit" class="plan-btn solid" style="width: 100%;">Start with Pro</button>
+          </form>
+      {% else %}
+          <a href="{{ url_for('auth.register', plan='pro') }}" class="plan-btn solid">Start with Pro</a>
+      {% endif %}
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Team</div>
+      <div class="plan-price">$49 <span>/ month</span></div>
+      <div class="plan-desc">For larger orgs with shared infrastructure.</div>
+      <hr class="plan-divider">
+      <ul class="plan-features">
+        <li class="plan-feature has">Unlimited jobs</li>
+        <li class="plan-feature has">1 year run history</li>
+        <li class="plan-feature has">Email alerts</li>
+        <li class="plan-feature has">Slack / webhook alerts</li>
+        <li class="plan-feature has">Dependency chains</li>
+        <li class="plan-feature has">Multi-user + roles</li>
+      </ul>
+      {% if current_user.is_authenticated %}
+          <form action="{{ url_for('stripe_routes.checkout') }}" method="POST" style="margin: 0; width: 100%;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="plan" value="team">
+              <button type="submit" class="plan-btn ghost" style="width: 100%;">Start with Team</button>
+          </form>
+      {% else %}
+          <a href="{{ url_for('auth.register', plan='team') }}" class="plan-btn ghost">Start with Team</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

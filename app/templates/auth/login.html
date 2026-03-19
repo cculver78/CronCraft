@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In — CronCraft™{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="form-title">Welcome back</h2>
+    <p class="form-sub">Sign in to your CronCraft&trade; account</p>
+
+    <form id="loginForm" method="POST" action="{{ url_for('auth.login') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input class="form-input" type="email" id="email" name="email" required autofocus>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <input class="form-input" type="password" id="password" name="password" required>
+            <div style="text-align: right; margin-top: 6px;">
+                <a href="{{ url_for('auth.forgot_password') }}"
+                    style="color: var(--text-dim); font-size: 11px; text-decoration: none;">Forgot password?</a>
+            </div>
+        </div>
+
+        <div style="position: absolute; left: -9999px;" aria-hidden="true">
+            <label for="website">Website</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div id="loginCaptcha" class="g-recaptcha" data-sitekey="{{ config.RECAPTCHA_SITE_KEY }}"
+            data-callback="onCaptchaPass" data-size="invisible">
+        </div>
+
+        <button type="submit" class="btn-primary btn-submit">Sign In</button>
+    </form>
+
+    <div class="auth-links">
+        Don't have an account? <a href="{{ url_for('auth.register') }}">Start free</a>
+    </div>
+</div>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+    function onCaptchaPass(token) {
+        document.getElementById('loginForm').submit();
+    }
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        grecaptcha.execute();
+    });
+</script>
+{% endblock %}

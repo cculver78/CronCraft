@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0; padding:0; background-color:#0a0e0c; font-family:'Courier New', monospace;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0e0c; padding:40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="500" cellpadding="0" cellspacing="0" style="background-color:#0f1410; border:1px solid rgba(34,197,94,0.12); border-radius:8px; overflow:hidden;">
+                    <tr>
+                        <td style="padding:30px 30px 20px; border-bottom:1px solid rgba(34,197,94,0.12);">
+                            <span style="font-size:15px; font-weight:700; color:#e8f0e8; letter-spacing:-0.02em;">CronCraft&trade;</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:30px;">
+                            {% if alert_type == 'missed' %}
+                            <h2 style="font-size:20px; color:#ef4444; margin:0 0 16px;">&#9888; Missed Ping</h2>
+                            {% elif alert_type == 'failed' %}
+                            <h2 style="font-size:20px; color:#ef4444; margin:0 0 16px;">&#10007; Job Failed</h2>
+                            {% elif alert_type == 'recovered' %}
+                            <h2 style="font-size:20px; color:#22c55e; margin:0 0 16px;">&#10003; Job Recovered</h2>
+                            {% elif alert_type == 'anomaly' %}
+                            <h2 style="font-size:20px; color:#f59e0b; margin:0 0 16px;">&#9888; Duration Anomaly</h2>
+                            {% else %}
+                            <h2 style="font-size:20px; color:#f59e0b; margin:0 0 16px;">Alert</h2>
+                            {% endif %}
+
+                            <p style="font-size:14px; color:#e8f0e8; line-height:1.7; margin:0 0 8px;">
+                                <strong>{{ job.name }}</strong>
+                            </p>
+                            <p style="font-size:14px; color:#6b7d6b; line-height:1.7; margin:0 0 24px;">
+                                {{ message }}
+                            </p>
+                            <table cellpadding="0" cellspacing="0" style="font-size:12px; color:#6b7d6b; line-height:2;">
+                                <tr><td style="padding-right:16px;">Schedule</td><td style="color:#e8f0e8;">{{ job.schedule }}</td></tr>
+                                <tr><td style="padding-right:16px;">Grace Period</td><td style="color:#e8f0e8;">{{ job.grace_period }} min</td></tr>
+                                {% if job.expected_at %}
+                                <tr><td style="padding-right:16px;">Expected At</td><td style="color:#e8f0e8;">{{ job.expected_at.strftime('%Y-%m-%d %H:%M:%S') }} UTC</td></tr>
+                                {% endif %}
+                            </table>
+                            {% if alert_type == 'anomaly' and anomaly_data %}
+                            <table cellpadding="0" cellspacing="0" style="font-size:12px; color:#6b7d6b; line-height:2; margin-top:16px; border-top:1px solid rgba(34,197,94,0.12); padding-top:12px;">
+                                <tr><td colspan="2" style="color:#f59e0b; font-weight:700; padding-bottom:4px;">Anomaly Stats</td></tr>
+                                <tr><td style="padding-right:16px;">Metric</td><td style="color:#e8f0e8;">{{ anomaly_data.metric }}</td></tr>
+                                <tr><td style="padding-right:16px;">This Run</td><td style="color:#f59e0b; font-weight:700;">{{ anomaly_data.current | int }} ms</td></tr>
+                                <tr><td style="padding-right:16px;">Average</td><td style="color:#e8f0e8;">{{ anomaly_data.mean | int }} ms</td></tr>
+                                <tr><td style="padding-right:16px;">Std Dev</td><td style="color:#e8f0e8;">{{ anomaly_data.stdev | int }} ms</td></tr>
+                                <tr><td style="padding-right:16px;">Z-Score</td><td style="color:#f59e0b;">{{ anomaly_data.z_score }}σ</td></tr>
+                            </table>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:20px 30px; border-top:1px solid rgba(34,197,94,0.12); font-size:11px; color:#3d4d3d;">
+                            &copy; 2026 CronCraft&trade; &mdash; Edge Case Software, LLC
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

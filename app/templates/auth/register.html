@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Register — CronCraft™{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="corner-ribbon" style="background: var(--green);">Now Open</div>
+    <h2 class="form-title">Start monitoring</h2>
+    <p class="form-sub">Create your free account to get started.</p>
+
+    <form id="registerForm" method="POST" action="{{ url_for('auth.register') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input class="form-input" type="email" id="email" name="email" required autofocus>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <input class="form-input" type="password" id="password" name="password" required minlength="8">
+        </div>
+
+        <div style="position: absolute; left: -9999px;" aria-hidden="true">
+            <label for="website">Website</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div id="registerCaptcha" class="g-recaptcha" data-sitekey="{{ config.RECAPTCHA_SITE_KEY }}"
+            data-callback="onCaptchaPass" data-size="invisible">
+        </div>
+
+        <button type="submit" class="btn-primary btn-submit">Create Account</button>
+    </form>
+
+    <div class="auth-links">
+        Already have an account? <a href="{{ url_for('auth.login') }}">Sign In</a>
+    </div>
+</div>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+    function onCaptchaPass(token) {
+        document.getElementById('registerForm').submit();
+    }
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        grecaptcha.execute();
+    });
+</script>
+{% endblock %}

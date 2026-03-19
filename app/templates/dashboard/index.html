@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — CronCraft™{% endblock %}
+
+{% block content %}
+<section>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2>Dashboard</h2>
+            <p class="section-sub" style="margin-bottom: 0;">
+                Monitoring {{ job_count }} total job(s){% if job_limit %} ({{ personal_jobs_count }} / {{ job_limit }} personal){% endif %}
+                <span class="t-muted" style="font-size: 10px; margin-left: 6px;">({{ current_user.plan|capitalize }} plan)</span>
+            </p>
+        </div>
+        <div>
+            {% if at_limit %}
+                <span class="btn-ghost" style="opacity: 0.5; cursor: not-allowed;" title="Plan limit reached — upgrade to add more jobs">Register New Job</span>
+            {% else %}
+                <a href="{{ url_for('jobs.create') }}" class="btn-primary">Register New Job</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="terminal">
+        <div class="terminal-bar" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center;">
+                <div class="tb-dot tb-red"></div>
+                <div class="tb-dot tb-amber"></div>
+                <div class="tb-dot tb-green"></div>
+                <span class="terminal-title">croncraft &mdash; jobs</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
+                <span style="color: var(--text-dim); letter-spacing: 0.05em;">SHOW:</span>
+                <button class="job-filter-btn active" data-filter="all">ALL</button>
+                <button class="job-filter-btn" data-filter="ok">OK</button>
+                <button class="job-filter-btn" data-filter="late">WARN</button>
+                <button class="job-filter-btn" data-filter="failed">FAIL</button>
+                <button class="job-filter-btn" data-filter="waiting">WAITING</button>
+            </div>
+        </div>
+        <div class="terminal-body" id="job-list">
+            {% if not jobs %}
+            <div class="t-muted">No jobs are currently registered. Register your first job to get a ping token.</div>
+            {% else %}
+            <div class="job-grid">
+                {% for job in jobs %}
+                <div class="job-row" data-status="{% if not job.is_active %}paused{% elif job.last_status == 'ok' %}ok{% elif job.last_status == 'late' %}late{% elif job.last_status == 'failed' %}failed{% else %}waiting{% endif %}">
+                    <div>
+                        <div class="job-name">
+                            {{ job.name }}
+                            {% if job.team %}
+                            <span style="background: var(--bg3); border: 1px solid var(--border); padding: 2px 6px; font-size: 9px; border-radius: 4px; margin-left: 6px; vertical-align: middle; color: var(--text-muted); font-weight: normal; letter-spacing: 0.05em; text-transform: uppercase;">{{ job.team.name }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="job-schedule">{{ job.schedule }} &mdash; 
+                            {% if job.last_ping_at %}
+                                pinged <span class="local-time" data-utc="{{ job.last_ping_at.isoformat() }}Z">{{ job.last_ping_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
+                            {% else %}
+                                expected 
+                                {% if job.expected_at %}
+                                    <span class="local-time" data-utc="{{ job.expected_at.isoformat() }}Z">{{ job.expected_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
+                                {% else %}
+                                    Never
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="t-muted" style="font-size: 10px; margin-top: 4px;">Ping URL: {{ url_for('ping.receive_ping', token=job.ping_token, _external=True) }}</div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        {% if not job.is_active %}
+                            <span class="status-pill status-ok" style="background: var(--bg3); color: var(--text-dim);">PAUSED</span>
+                        {% elif job.last_status == 'ok' %}
+                            <span class="status-pill status-ok">OK</span>
+                        {% elif job.last_status == 'late' %}
+                            <span class="status-pill status-late">LATE</span>
+                        {% elif job.last_status == 'failed' %}
+                            <span class="status-pill status-dead">FAILED</span>
+                        {% else %}
+                            <span class="status-pill status-ok" style="background: var(--bg3); color: var(--text-dim);">WAITING</span>
+                        {% endif %}
+                        <a href="{{ url_for('jobs.detail', id=job.id) }}" class="btn-ghost job-action-btn">View</a>
+                        <a href="{{ url_for('jobs.edit', id=job.id) }}" class="btn-ghost job-action-btn">Edit</a>
+                        <form action="{{ url_for('jobs.toggle_pause', id=job.id) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn-ghost job-action-btn">{{ 'Pause' if job.is_active else 'Resume' }}</button>
+                        </form>
+                        <form action="{{ url_for('jobs.delete', id=job.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this job?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn-ghost job-action-btn job-action-delete">Delete</button>
+                        </form>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% include 'partials/_pagination.html' %}
+</section>
+
+<style>
+    .job-action-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+        min-width: 52px;
+        text-align: center;
+        line-height: 1.2;
+        box-sizing: border-box;
+        display: inline-block;
+        font-family: inherit;
+    }
+    .job-action-delete {
+        border-color: rgba(239, 68, 68, 0.4);
+        color: var(--red);
+    }
+    .job-filter-btn {
+        background: transparent;
+        border: 1px solid rgba(34, 197, 94, 0.15);
+        color: var(--text-dim);
+        padding: 2px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 10px;
+        transition: all 0.15s ease;
+    }
+    .job-filter-btn:hover {
+        border-color: rgba(34, 197, 94, 0.4);
+        color: var(--green);
+    }
+    .job-filter-btn.active {
+        background: rgba(34, 197, 94, 0.12);
+        border-color: var(--green);
+        color: var(--green);
+    }
+</style>
+<script>
+(function() {
+    const buttons = document.querySelectorAll('.job-filter-btn');
+    const rows = document.querySelectorAll('.job-row');
+
+    buttons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            buttons.forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+
+            const filter = btn.getAttribute('data-filter');
+            rows.forEach(function(row) {
+                if (filter === 'all') {
+                    row.style.display = '';
+                } else {
+                    row.style.display = row.getAttribute('data-status') === filter ? '' : 'none';
+                }
+            });
+        });
+    });
+})();
+</script>
+{% endblock %}

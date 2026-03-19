@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ user.email }} — Admin — CronCraft™{% endblock %}
+
+{% block content %}
+<section>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <div class="section-label">Admin Panel</div>
+            <h2>Edit User</h2>
+        </div>
+        <a href="{{ url_for('admin.user_detail', id=user.id) }}" class="btn-ghost">← Back to User</a>
+    </div>
+
+    <div class="form-container" style="max-width: 560px;">
+        <div class="form-title">{{ user.email }}</div>
+        <div class="form-sub">User ID: {{ user.id }}</div>
+
+        <form method="POST" action="{{ url_for('admin.user_edit', id=user.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-input" value="{{ user.email }}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="username">Username</label>
+                <input type="text" name="username" id="username" class="form-input" value="{{ user.username or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="display_name">Display Name</label>
+                <input type="text" name="display_name" id="display_name" class="form-input" value="{{ user.display_name or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="timezone">Timezone</label>
+                <input type="text" name="timezone" id="timezone" class="form-input" value="{{ user.timezone }}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="plan">Plan</label>
+                <select name="plan" id="plan" class="form-input">
+                    <option value="free" {{ 'selected' if user.plan == 'free' }}>Free</option>
+                    <option value="pro" {{ 'selected' if user.plan == 'pro' }}>Pro</option>
+                    <option value="team" {{ 'selected' if user.plan == 'team' }}>Team</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 2rem; margin-bottom: 1.25rem;">
+                <div class="form-group" style="margin-bottom: 0; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="email_verified" id="email_verified"
+                           style="accent-color: var(--green); width: 16px; height: 16px;"
+                           {{ 'checked' if user.email_verified }}>
+                    <label for="email_verified" class="form-label" style="margin-bottom: 0; text-transform: none; font-size: 13px; color: var(--text);">Email Verified</label>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="is_admin" id="is_admin"
+                           style="accent-color: var(--amber); width: 16px; height: 16px;"
+                           {{ 'checked' if user.is_admin }}>
+                    <label for="is_admin" class="form-label" style="margin-bottom: 0; text-transform: none; font-size: 13px; color: var(--amber);">Admin</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary btn-submit">Save Changes</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

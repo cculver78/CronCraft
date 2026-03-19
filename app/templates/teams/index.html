@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Teams &mdash; CronCraft{% endblock %}
+
+{% block content %}
+<section>
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+    <div>
+      <div class="section-label">Collaboration</div>
+      <h2>Your <em>Teams</em></h2>
+    </div>
+    {% if current_user.plan in ('pro', 'team') %}
+    <a href="{{ url_for('teams.create') }}" class="btn-primary">Create Team</a>
+    {% else %}
+    <a href="{{ url_for('subscription.index') }}" class="btn-primary" style="background: var(--amber); color: #0a0e0c;">Upgrade to Create Team</a>
+    {% endif %}
+  </div>
+
+  {% if not owned_teams and not member_teams %}
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 4rem 2rem; text-align: center;">
+      <div style="color: var(--text-muted); margin-bottom: 1.5rem;">You don't belong to any teams yet.</div>
+      <p style="font-size: 13px; color: var(--text-dim); max-width: 400px; margin: 0 auto; line-height: 1.6;">
+        Teams allow you to collaborate on jobs with other users. You can create a team to share jobs, or an admin can invite you to theirs.
+      </p>
+    </div>
+  {% else %}
+
+    {% if owned_teams %}
+      <h3 style="font-family: var(--serif); font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem;">Teams You Own</h3>
+      <div class="job-grid">
+        {% for team in owned_teams %}
+          <div class="job-row" style="grid-template-columns: 1fr auto;">
+            <div>
+              <a href="{{ url_for('teams.detail', id=team.id) }}" class="job-name" style="text-decoration: none; font-size: 14px; font-weight: 700;">{{ team.name }}</a>
+              <div class="job-schedule">{{ team.members|length }} Member(s) &middot; {{ team.jobs|length }} Job(s)</div>
+            </div>
+            <a href="{{ url_for('teams.detail', id=team.id) }}" class="btn-ghost" style="padding: 6px 12px; font-size: 11px;">Manage</a>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if member_teams %}
+      <h3 style="font-family: var(--serif); font-size: 1.5rem; margin-top: 3rem; margin-bottom: 1rem;">Teams You Joined</h3>
+      <div class="job-grid">
+        {% for team in member_teams %}
+          <div class="job-row" style="grid-template-columns: 1fr auto auto;">
+            <div>
+              <a href="{{ url_for('teams.detail', id=team.id) }}" class="job-name" style="text-decoration: none; font-size: 14px; font-weight: 700;">{{ team.name }}</a>
+              <div class="job-schedule" style="color: var(--text-muted);">Owner: {{ team.owner.email }}</div>
+            </div>
+            {% set member_record = team.members | selectattr('user_id', 'equalto', current_user.id) | first %}
+            {% if member_record %}
+              <div class="status-pill status-ok" style="background: var(--bg3); border: 1px solid var(--border); color: var(--text-muted);">
+                {{ member_record.role | upper }}
+              </div>
+            {% endif %}
+            <a href="{{ url_for('teams.detail', id=team.id) }}" class="btn-ghost" style="padding: 6px 12px; font-size: 11px;">View</a>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  {% endif %}
+</section>
+{% endblock %}

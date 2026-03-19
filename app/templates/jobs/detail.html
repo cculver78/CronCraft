@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}{{ job.name }} — CronCraft™{% endblock %}
+
+{% block content %}
+<section>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2>{{ job.name }}</h2>
+            <p class="section-sub" style="margin-bottom: 0;">
+                {{ job.schedule }}
+                <span class="t-muted" style="font-size: 10px; margin-left: 6px;">Grace: {{ job.grace_period }}m</span>
+            </p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            {% if not job.is_active %}
+                <span class="status-pill status-ok" style="background: var(--bg3); color: var(--text-dim);">PAUSED</span>
+            {% elif job.last_status == 'ok' %}
+                <span class="status-pill status-ok">OK</span>
+            {% elif job.last_status == 'late' %}
+                <span class="status-pill status-late">LATE</span>
+            {% elif job.last_status == 'failed' %}
+                <span class="status-pill status-dead">FAILED</span>
+            {% else %}
+                <span class="status-pill status-ok" style="background: var(--bg3); color: var(--text-dim);">WAITING</span>
+            {% endif %}
+            <a href="{{ url_for('jobs.edit', id=job.id) }}" class="btn-ghost" style="padding: 6px 12px; font-size: 11px;">Edit</a>
+            <a href="{{ url_for('dashboard.index') }}" class="btn-ghost" style="padding: 6px 12px; font-size: 11px;">&larr; Dashboard</a>
+        </div>
+    </div>
+
+    <div class="terminal" style="margin-bottom: 1.5rem;">
+        <div class="terminal-bar">
+            <div class="tb-dot tb-red"></div>
+            <div class="tb-dot tb-amber"></div>
+            <div class="tb-dot tb-green"></div>
+            <span class="terminal-title">croncraft &mdash; job details</span>
+        </div>
+        <div class="terminal-body" style="font-size: 12px; line-height: 2;">
+            <div><span class="t-prompt">$</span> <span class="t-cmd">ping_url</span></div>
+            <div class="t-muted" style="user-select: all;">{{ url_for('ping.receive_ping', token=job.ping_token, _external=True) }}</div>
+            {% if job.notes %}
+            <div style="margin-top: 8px;"><span class="t-prompt">$</span> <span class="t-cmd">notes</span></div>
+            <div class="t-muted">{{ job.notes }}</div>
+            {% endif %}
+            <div style="margin-top: 8px;"><span class="t-prompt">$</span> <span class="t-cmd">last_ping</span></div>
+            <div class="t-muted">
+                {% if job.last_ping_at %}
+                    <span class="local-time" data-utc="{{ job.last_ping_at.isoformat() }}Z">{{ job.last_ping_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
+                {% else %}
+                    Never
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="terminal">
+        <div class="terminal-bar">
+            <div class="tb-dot tb-red"></div>
+            <div class="tb-dot tb-amber"></div>
+            <div class="tb-dot tb-green"></div>
+            <span class="terminal-title">croncraft &mdash; run history</span>
+            <span style="margin-left: auto; font-size: 10px; color: var(--text-dim);">
+                Last {{ history_days }} day{{ 's' if history_days != 1 else '' }} &mdash; {{ current_user.plan|capitalize }} plan
+            </span>
+        </div>
+        <div class="terminal-body">
+            {% if not runs %}
+            <div class="t-muted">No runs recorded in the last {{ history_days }} days.</div>
+            {% else %}
+            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border); color: var(--text-dim); text-align: left;">
+                        <th style="padding: 6px 8px; font-weight: 700; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase;">Status</th>
+                        <th style="padding: 6px 8px; font-weight: 700; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase;">Pinged At</th>
+                        <th style="padding: 6px 8px; font-weight: 700; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase;">Expected At</th>
+                        <th style="padding: 6px 8px; font-weight: 700; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase;">IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for run in runs %}
+                    <tr style="border-bottom: 1px solid var(--border); transition: background 0.1s;"
+                        onmouseover="this.style.background='var(--green-glow)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 6px 8px;">
+                            {% if run.status == 'ok' %}
+                                <span class="status-pill status-ok">OK</span>
+                            {% elif run.status == 'late' %}
+                                <span class="status-pill status-late">LATE</span>
+                            {% elif run.status == 'failed' %}
+                                <span class="status-pill status-dead">FAILED</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 6px 8px; color: var(--text-muted);">
+                            {% if run.pinged_at %}
+                                <span class="local-time" data-utc="{{ run.pinged_at.isoformat() }}Z">{{ run.pinged_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
+                            {% else %}
+                                &mdash;
+                            {% endif %}
+                        </td>
+                        <td style="padding: 6px 8px; color: var(--text-muted);">
+                            {% if run.expected_at %}
+                                <span class="local-time" data-utc="{{ run.expected_at.isoformat() }}Z">{{ run.expected_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
+                            {% else %}
+                                &mdash;
+                            {% endif %}
+                        </td>
+                        <td style="padding: 6px 8px; color: var(--text-dim);">{{ run.ip_address or '&mdash;' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="t-muted" style="margin-top: 12px; font-size: 11px;">
+                {{ pagination.total }} run{{ 's' if pagination.total != 1 else '' }} total
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% include 'partials/_pagination.html' %}
+</section>
+{% endblock %}

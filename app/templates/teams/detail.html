@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}{{ team.name }} &mdash; CronCraft{% endblock %}
+
+{% block content %}
+<section>
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem;">
+    <div>
+      <div class="section-label">Team Dashboard</div>
+      <h2>{{ team.name }}</h2>
+      <p style="color: var(--text-muted); font-size: 13px;">Created {{ team.created_at.strftime('%b %d, %Y') }}</p>
+    </div>
+    <div style="display: flex; gap: 1rem;">
+      <a href="{{ url_for('teams.index') }}" class="btn-ghost">&larr; Back</a>
+      {% if team.owner_id == current_user_id %}
+      <form action="{{ url_for('teams.delete', id=team.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this team? All team members will be removed. This cannot be undone.');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn-ghost" style="color: var(--red); border-color: rgba(239, 68, 68, 0.2);">Delete Team</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;">
+    <!-- Members Column -->
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h3 style="font-family: var(--serif); font-size: 1.5rem; margin: 0;">Members</h3>
+      </div>
+
+      <div class="job-grid" style="margin-top: 0; padding-top: 0; border-top: none;">
+        {% for member in members %}
+          {% set user = member.user %}
+          <div class="job-row" style="grid-template-columns: 1fr auto auto; border: 1px solid var(--border); margin-bottom: 8px; background: var(--bg2);">
+            <div>
+              <div class="job-name">{{ user.email }} {% if user.id == team.owner_id %}<span style="color: var(--amber);">(Owner)</span>{% elif user.id == current_user_id %}<span style="color: var(--text-dim);">(You)</span>{% endif %}</div>
+              <div class="job-schedule">{{ user.username or 'No username' }} &middot; Joined {{ member.created_at.strftime('%Y-%m-%d') if member.created_at else 'Unknown' }}</div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 8px;">
+              {% if is_admin and user.id != team.owner_id %}
+                <form action="{{ url_for('teams.change_role', team_id=team.id, member_id=member.id) }}" method="POST" style="display:flex; gap: 8px;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <select name="role" onchange="this.form.submit()" style="background: var(--bg3); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 4px 8px; font-size: 11px; font-family: var(--mono);">
+                    <option value="member" {% if member.role == 'member' %}selected{% endif %}>Member</option>
+                    <option value="admin" {% if member.role == 'admin' %}selected{% endif %}>Admin</option>
+                  </select>
+                </form>
+              {% else %}
+                <div class="status-pill status-ok" style="background: var(--bg3); border: 1px solid var(--border); color: var(--text-muted);">
+                  {{ member.role | upper }}
+                </div>
+              {% endif %}
+            </div>
+
+            {% if (is_admin and user.id != team.owner_id) or user.id == current_user_id %}
+            <form action="{{ url_for('teams.remove_member', team_id=team.id, member_id=member.id) }}" method="POST" onsubmit="return confirm('Remove {% if user.id == current_user_id %}yourself{% else %}this member{% endif %} from the team?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn-ghost" style="padding: 4px 8px; font-size: 11px; color: var(--red); border-color: rgba(239, 68, 68, 0.2);">
+                {% if user.id == current_user_id %}Leave{% else %}Remove{% endif %}
+              </button>
+            </form>
+            {% else %}
+            <div style="width: 58px;"></div> <!-- Placeholder to maintain grid alignment -->
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if is_admin %}
+      <div style="margin-top: 2rem; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem;">
+        <h4 style="font-size: 13px; margin-bottom: 1rem;">Invite Member</h4>
+        <form action="{{ url_for('teams.add_member', id=team.id) }}" method="POST" style="display: flex; gap: 8px;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="text" name="identifier" class="form-input" placeholder="Email address or username" required style="flex: 1; padding: 8px 12px; font-size: 12px;">
+          <select name="role" class="form-input" style="width: auto; padding: 8px 12px; font-size: 12px;">
+            <option value="member">Member</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button type="submit" class="btn-primary" style="padding: 8px 16px;">Add</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Jobs Column -->
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h3 style="font-family: var(--serif); font-size: 1.5rem; margin: 0;">Team Jobs</h3>
+        <a href="{{ url_for('jobs.create', team_id=team.id) }}" class="btn-ghost" style="padding: 6px 12px; font-size: 11px;">+ New Job</a>
+      </div>
+
+      {% if not team.jobs %}
+        <div style="background: var(--bg2); border: 1px dotted var(--border); border-radius: 8px; padding: 3rem 1.5rem; text-align: center;">
+          <div style="color: var(--text-muted); font-size: 12px;">No jobs assigned to this team yet.</div>
+        </div>
+      {% else %}
+        <div class="job-grid" style="margin-top: 0; padding-top: 0; border-top: none;">
+          {% for job in team.jobs %}
+            <div class="job-row" style="grid-template-columns: 1fr auto auto; border: 1px solid var(--border); margin-bottom: 8px; background: var(--bg2);">
+              <div>
+                <a href="{{ url_for('jobs.detail', id=job.id) }}" class="job-name" style="text-decoration: none; font-size: 14px; font-weight: 700;">{{ job.name }}</a>
+                <div class="job-schedule">{{ job.schedule }} &middot; {{ job.timezone }}</div>
+              </div>
+              <div class="status-pill {% if job.is_active %}{% if job.last_status == 'ok' %}status-ok{% elif job.last_status == 'late' %}status-late{% elif job.last_status == 'failed' %}status-dead{% else %}status-ok{% endif %}{% else %}status-ok{% endif %}" {% if not job.is_active %}style="background: var(--bg3); color: var(--text-muted); border: 1px solid var(--border);"{% endif %}>
+                {% if not job.is_active %}PAUSED{% else %}{{ job.last_status | upper }}{% endif %}
+              </div>
+              <a href="{{ url_for('jobs.detail', id=job.id) }}" class="btn-ghost" style="padding: 6px 12px; font-size: 11px;">View</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

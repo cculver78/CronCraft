@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Settings — CronCraft™{% endblock %}
+
+{% block content %}
+<section style="padding-top: 2rem;">
+    <h2 style="margin-bottom: 2rem;">User Settings</h2>
+    
+    <div class="form-container" style="max-width: 600px; margin: 0; position: relative;">
+        <!-- Re-using existing CSS utility classes -->
+        <form method="POST" action="{{ url_for('settings.index') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <h3 style="font-family: var(--serif); margin-bottom: 1.5rem; color: var(--text);">Profile Information</h3>
+            
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input class="form-input" type="email" id="email" name="email" value="{{ current_user.email }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="username">Username (Optional)</label>
+                <input class="form-input" type="text" id="username" name="username" value="{{ current_user.username or '' }}">
+                <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Used for public profiles or team mentions.</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="display_name">Display Name (Optional)</label>
+                <input class="form-input" type="text" id="display_name" name="display_name" value="{{ current_user.display_name or '' }}">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="timezone">Preferred Timezone</label>
+                <select class="form-input" id="timezone" name="timezone">
+                    <!-- Standard subset of timezones for simplicity, defaulting to UTC -->
+                    <option value="UTC" {% if current_user.timezone == 'UTC' %}selected{% endif %}>UTC</option>
+                    <option value="America/New_York" {% if current_user.timezone == 'America/New_York' %}selected{% endif %}>America/New_York (EST/EDT)</option>
+                    <option value="America/Chicago" {% if current_user.timezone == 'America/Chicago' %}selected{% endif %}>America/Chicago (CST/CDT)</option>
+                    <option value="America/Denver" {% if current_user.timezone == 'America/Denver' %}selected{% endif %}>America/Denver (MST/MDT)</option>
+                    <option value="America/Los_Angeles" {% if current_user.timezone == 'America/Los_Angeles' %}selected{% endif %}>America/Los_Angeles (PST/PDT)</option>
+                    <option value="Europe/London" {% if current_user.timezone == 'Europe/London' %}selected{% endif %}>Europe/London (GMT/BST)</option>
+                    <option value="Europe/Paris" {% if current_user.timezone == 'Europe/Paris' %}selected{% endif %}>Europe/Paris (CET/CEST)</option>
+                    <option value="Asia/Tokyo" {% if current_user.timezone == 'Asia/Tokyo' %}selected{% endif %}>Asia/Tokyo (JST)</option>
+                    <option value="Australia/Sydney" {% if current_user.timezone == 'Australia/Sydney' %}selected{% endif %}>Australia/Sydney (AEST/AEDT)</option>
+                </select>
+                <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">Affects emails and scheduled summaries.</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="date_format">Date Format</label>
+                <select class="form-input" id="date_format" name="date_format">
+                    <option value="YYYY-MM-DD" {% if current_user.date_format == 'YYYY-MM-DD' %}selected{% endif %}>2026-03-15 (YYYY-MM-DD)</option>
+                    <option value="MM/DD/YYYY" {% if current_user.date_format == 'MM/DD/YYYY' %}selected{% endif %}>03/15/2026 (MM/DD/YYYY)</option>
+                    <option value="DD/MM/YYYY" {% if current_user.date_format == 'DD/MM/YYYY' %}selected{% endif %}>15/03/2026 (DD/MM/YYYY)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="time_format">Time Format</label>
+                <select class="form-input" id="time_format" name="time_format">
+                    <option value="24h" {% if current_user.time_format == '24h' %}selected{% endif %}>24-hour (20:00:00)</option>
+                    <option value="12h" {% if current_user.time_format == '12h' %}selected{% endif %}>12-hour (8:00:00 PM)</option>
+                </select>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid var(--border); margin: 2rem 0;">
+            
+            <h3 style="font-family: var(--serif); margin-bottom: 1.5rem; color: var(--text);">Change Password</h3>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 1.5rem;">Leave blank if you do not wish to change your password.</div>
+            
+            <div class="form-group">
+                <label class="form-label" for="current_password">Current Password</label>
+                <input class="form-input" type="password" id="current_password" name="current_password">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="new_password">New Password</label>
+                <input class="form-input" type="password" id="new_password" name="new_password" minlength="8" maxlength="50">
+                <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">8–50 characters. Must include uppercase, lowercase, number, and special character.</div>
+            </div>
+            
+            {% if current_user.is_admin %}
+            <hr style="border: none; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+            <h3 style="font-family: var(--serif); margin-bottom: 1.5rem; color: var(--text);">Admin Preferences</h3>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="version_check_enabled" name="version_check_enabled" value="1"
+                       {% if current_user.version_check_enabled %}checked{% endif %}
+                       style="accent-color: var(--green); width: 16px; height: 16px;">
+                <label for="version_check_enabled" style="font-size: 13px; color: var(--text); cursor: pointer; text-transform: none; font-weight: 400;">
+                    Check for new versions on login
+                </label>
+            </div>
+            <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">When enabled, you'll be notified if a newer version of CronCraft is available.</div>
+            {% endif %}
+
+            <button type="submit" class="btn-primary" style="margin-top: 1rem;">Save Settings</button>
+        </form>
+
+        <hr style="border: none; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+        <h3 style="font-family: var(--serif); margin-bottom: 1.5rem; color: var(--text);">API Token</h3>
+
+        {% if not is_self_hosted and current_user.plan == 'free' %}
+            <div style="font-size: 13px; color: var(--text-dim); margin-bottom: 1rem;">
+                🔒 API access requires a <a href="{{ url_for('subscription.index') }}" style="color: var(--primary);">Pro or Team plan</a>.
+            </div>
+        {% else %}
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 1rem;">
+                Use this token to authenticate REST API requests. Send it as <code>Authorization: Bearer &lt;token&gt;</code>.
+            </div>
+
+            {% if current_user.api_token_hash %}
+                <div style="font-size: 13px; color: var(--green); margin-bottom: 1rem;">✓ Token is active</div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <form method="POST" action="{{ url_for('settings.generate_api_token') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-primary" style="font-size: 13px;" onclick="return confirm('This will replace your existing token. Continue?')">Regenerate Token</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('settings.revoke_api_token') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-primary" style="font-size: 13px; background: var(--red);" onclick="return confirm('Revoke your API token? Any scripts using it will stop working.')">Revoke Token</button>
+                    </form>
+                </div>
+            {% else %}
+                <form method="POST" action="{{ url_for('settings.generate_api_token') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-primary" style="font-size: 13px;">Generate API Token</button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

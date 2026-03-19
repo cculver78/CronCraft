@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}New Job — CronCraft™{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Register New Job</h2>
+    <p class="section-sub">Define the schedule and grace period for your script.</p>
+    
+    <div class="form-container" style="max-width: 600px; margin: 2rem 0;">
+        <form method="POST" action="{{ url_for('jobs.create') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <label class="form-label" for="name">Job Name</label>
+                <input class="form-input" type="text" id="name" name="name" placeholder="e.g. database-backup" required autofocus maxlength="255">
+            </div>
+
+            {% if user_teams %}
+            <div class="form-group">
+                <label class="form-label" for="team_id">Ownership (Team)</label>
+                <select class="form-input" id="team_id" name="team_id">
+                    <option value="">Personal (No Team)</option>
+                    {% for team in user_teams %}
+                    <option value="{{ team.id }}" {% if default_team_id == team.id %}selected{% endif %}>{{ team.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
+            {% if available_jobs and plan_limits.allow_dependencies %}
+            <div class="form-group">
+                <label class="form-label" for="depends_on">Depends On (Optional)</label>
+                <select class="form-input" id="depends_on" name="depends_on">
+                    <option value="">None — This is a standalone job</option>
+                    {% for p_job in available_jobs %}
+                    <option value="{{ p_job.id }}">{{ p_job.name }}{% if p_job.team %} ({{ p_job.team.name }}){% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% elif not plan_limits.allow_dependencies %}
+            <div class="form-group">
+                <label class="form-label">Depends On</label>
+                <div class="t-muted" style="font-size: 11px; padding: 8px 0;">🔒 Dependency chains are a <strong>Pro</strong> feature. <a href="{{ url_for('subscription.index') }}">Upgrade</a></div>
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label class="form-label" for="schedule">Cron Schedule</label>
+                <input class="form-input" type="text" id="schedule" name="schedule" placeholder="* * * * *" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="grace_period">Grace Period (Minutes)</label>
+                <input class="form-input" type="number" id="grace_period" name="grace_period" value="15" required min="1" max="1440">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="timezone">Job Timezone</label>
+                <select class="form-input" id="timezone" name="timezone">
+                    <option value="UTC" {% if current_user.timezone == 'UTC' %}selected{% endif %}>UTC</option>
+                    <option value="America/New_York" {% if current_user.timezone == 'America/New_York' %}selected{% endif %}>America/New_York (EST/EDT)</option>
+                    <option value="America/Chicago" {% if current_user.timezone == 'America/Chicago' %}selected{% endif %}>America/Chicago (CST/CDT)</option>
+                    <option value="America/Denver" {% if current_user.timezone == 'America/Denver' %}selected{% endif %}>America/Denver (MST/MDT)</option>
+                    <option value="America/Los_Angeles" {% if current_user.timezone == 'America/Los_Angeles' %}selected{% endif %}>America/Los_Angeles (PST/PDT)</option>
+                    <option value="Europe/London" {% if current_user.timezone == 'Europe/London' %}selected{% endif %}>Europe/London (GMT/BST)</option>
+                    <option value="Europe/Paris" {% if current_user.timezone == 'Europe/Paris' %}selected{% endif %}>Europe/Paris (CET/CEST)</option>
+                    <option value="Asia/Tokyo" {% if current_user.timezone == 'Asia/Tokyo' %}selected{% endif %}>Asia/Tokyo (JST)</option>
+                    <option value="Australia/Sydney" {% if current_user.timezone == 'Australia/Sydney' %}selected{% endif %}>Australia/Sydney (AEST/AEDT)</option>
+                </select>
+                <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">The timezone your cron schedule is written in. Defaults to your profile timezone.</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="notes">Notes</label>
+                <textarea class="form-input" id="notes" name="notes" rows="3" maxlength="255" placeholder="Optional notes about this job"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Alert Channels</label>
+                <div style="display: flex; gap: 1rem; align-items: center; justify-content: flex-start; margin-bottom: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                        <input type="checkbox" name="notify_email" checked style="accent-color: var(--green); width: 14px; height: 14px; cursor: pointer;">
+                        Email
+                    </label>
+                    {% if plan_limits.allow_webhook %}
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                        <input type="checkbox" name="notify_webhook" id="notify_webhook_cb" style="accent-color: var(--green); width: 14px; height: 14px; cursor: pointer;" onchange="document.getElementById('webhook_url_group').style.display = this.checked ? 'block' : 'none';">
+                        Webhook
+                    </label>
+                    {% else %}
+                    <span class="t-muted" style="font-size: 11px;">🔒 Webhook <em>(Pro)</em></span>
+                    {% endif %}
+                    {% if plan_limits.allow_slack %}
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                        <input type="checkbox" name="notify_slack" id="notify_slack_cb" style="accent-color: var(--green); width: 14px; height: 14px; cursor: pointer;" onchange="document.getElementById('slack_webhook_url_group').style.display = this.checked ? 'block' : 'none';">
+                        Slack
+                    </label>
+                    {% else %}
+                    <span class="t-muted" style="font-size: 11px;">🔒 Slack <em>(Pro)</em></span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if plan_limits.allow_webhook %}
+            <div class="form-group" id="webhook_url_group" style="display: none;">
+                <label class="form-label" for="webhook_url">Webhook URL</label>
+                <input class="form-input" type="url" id="webhook_url" name="webhook_url" placeholder="https://your-domain.com/webhook" maxlength="500">
+            </div>
+            {% endif %}
+
+            {% if plan_limits.allow_slack %}
+            <div class="form-group" id="slack_webhook_url_group" style="display: none;">
+                <label class="form-label" for="slack_webhook">Slack Webhook URL</label>
+                <input class="form-input" type="url" id="slack_webhook" name="slack_webhook" placeholder="https://hooks.slack.com/services/..." maxlength="500">
+            </div>
+            {% endif %}
+
+            <button type="submit" class="btn-primary" style="margin-top: 1rem;">Create Job</button>
+            <a href="{{ url_for('dashboard.index') }}" class="btn-ghost" style="margin-left: 12px;">Cancel</a>
+        </form>
+    </div>
+</section>
+{% endblock %}

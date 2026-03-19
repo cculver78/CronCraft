@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Forwarding to Checkout — CronCraft™{% endblock %}
+
+{% block content %}
+<div class="form-container" style="text-align: center; padding: 4rem 2rem;">
+    <h2 class="form-title">Forwarding...</h2>
+    <p class="form-sub">Taking you to the secure payment page.</p>
+
+    <form id="checkout-form" method="POST" action="{{ url_for('stripe_routes.checkout') }}" style="display: none;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="plan" value="{{ plan }}">
+        <button type="submit" class="btn-primary">Click here if not redirected automatically</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("checkout-form").submit();
+    });
+</script>
+{% endblock %}

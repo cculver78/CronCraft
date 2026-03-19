@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}404 — CronCraft™{% endblock %}
+
+{% block content %}
+<section style="text-align: center; padding: 6rem 2rem;">
+    <div class="terminal" style="max-width: 400px; margin: 0 auto;">
+        <div class="terminal-bar">
+            <div class="tb-dot tb-red"></div>
+            <div class="tb-dot tb-amber"></div>
+            <div class="tb-dot tb-green"></div>
+            <span class="terminal-title">croncraft &mdash; status</span>
+        </div>
+        <div class="terminal-body" style="text-align: center;">
+            <h1 style="font-size: 4rem; color: var(--red); margin-bottom: 1rem;">404</h1>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                <span class="t-prompt">$</span> cd /that-page<br>
+                <span style="color: var(--red);">bash: cd: /that-page: No such file or directory</span>
+            </p>
+            <a href="{{ url_for('main.index') }}" class="btn-ghost">Return to safety</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
