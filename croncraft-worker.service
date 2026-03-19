@@ -1,0 +1,17 @@
+[Unit]
+Description=CronCraft Worker - Background Job Monitor
+After=network.target croncraft.service
+
+[Service]
+User=chuck
+Group=www-data
+WorkingDirectory=/var/www/croncraft
+EnvironmentFile=/var/www/croncraft/.env
+Environment="PATH=/var/www/croncraft/venv/bin"
+ExecStart=/var/www/croncraft/venv/bin/python -m app.worker
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

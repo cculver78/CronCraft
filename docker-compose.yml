@@ -1,0 +1,91 @@
+# =============================================================================
+# CronCraft Docker Compose
+# =============================================================================
+#
+# Quick start (SQLite — zero config):
+#   docker compose up -d
+#
+# With MySQL:
+#   docker compose --profile mysql up -d
+#
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Web — Gunicorn serving the Flask app
+  # ---------------------------------------------------------------------------
+  web:
+    build: .
+    command: web
+    ports:
+      - "${CRONCRAFT_PORT:-5010}:5010"
+    env_file: .env
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=production
+      - SELF_HOSTED=true
+      - DATA_DIR=/app/data
+    volumes:
+      - croncraft-data:/app/data
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+        required: false
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5010/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # ---------------------------------------------------------------------------
+  # Worker — APScheduler background process (missed-ping checks, cleanup)
+  # ---------------------------------------------------------------------------
+  worker:
+    build: .
+    command: worker
+    env_file: .env
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=production
+      - SELF_HOSTED=true
+      - DATA_DIR=/app/data
+    volumes:
+      - croncraft-data:/app/data
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+        required: false
+    # Worker has no health endpoint but restarts on crash
+
+  # ---------------------------------------------------------------------------
+  # MySQL (optional — activate with: docker compose --profile mysql up)
+  # ---------------------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    profiles:
+      - mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-croncraft_root}"
+      MYSQL_DATABASE: croncraft
+      MYSQL_USER: croncraft
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:-croncraft_pass}"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  croncraft-data:
+  mysql-data:

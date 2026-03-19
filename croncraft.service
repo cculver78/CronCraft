@@ -1,0 +1,18 @@
+[Unit]
+Description=CronCraft - Gunicorn Service
+After=network.target
+
+[Service]
+User=chuck
+Group=www-data
+WorkingDirectory=/var/www/croncraft
+EnvironmentFile=/var/www/croncraft/.env
+Environment="PATH=/var/www/croncraft/venv/bin"
+# Using port 5010 to match your Apache reverse proxy configuration
+ExecStart=/var/www/croncraft/venv/bin/gunicorn --workers 1 --bind 127.0.0.1:5010 "app:create_app('production')"
+
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
