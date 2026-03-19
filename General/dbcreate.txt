@@ -1,0 +1,101 @@
+-- users
+CREATE TABLE users (
+    id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    email           VARCHAR(255) UNIQUE NOT NULL,
+    password_hash   VARCHAR(255) NOT NULL,
+    plan            ENUM('free', 'pro', 'team') DEFAULT 'free',
+    stripe_customer_id VARCHAR(255),
+    stripe_subscription_id VARCHAR(255),
+    timezone        VARCHAR(50) DEFAULT 'UTC',
+    username        VARCHAR(50) UNIQUE NULL,
+    display_name    VARCHAR(100) NULL,
+    email_verified  BOOLEAN DEFAULT FALSE,
+    is_admin        BOOLEAN DEFAULT FALSE,
+    plan_started_at TIMESTAMP NULL,
+    date_format     VARCHAR(20) DEFAULT 'YYYY-MM-DD',
+    time_format     VARCHAR(10) DEFAULT '24h',
+    grace_period_end TIMESTAMP NULL,
+    api_token_hash  VARCHAR(64) UNIQUE NULL,
+    version_check_enabled BOOLEAN DEFAULT TRUE,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- teams
+CREATE TABLE teams (
+    id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name            VARCHAR(255) NOT NULL,
+    owner_id        BIGINT UNSIGNED NOT NULL,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES users(id)
+);
+
+-- team_members
+CREATE TABLE team_members (
+    id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    team_id         BIGINT UNSIGNED NOT NULL,
+    user_id         BIGINT UNSIGNED NOT NULL,
+    role            ENUM('admin', 'member') DEFAULT 'member',
+    FOREIGN KEY (team_id) REFERENCES teams(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- jobs
+CREATE TABLE jobs (
+    id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id         BIGINT UNSIGNED NOT NULL,
+    team_id         BIGINT UNSIGNED,
+    name            VARCHAR(255) NOT NULL,
+    description     TEXT,
+    notes           VARCHAR(255) NULL,
+    ping_token      VARCHAR(64) UNIQUE NOT NULL,
+    schedule        VARCHAR(100) NOT NULL,
+    grace_period    INTEGER DEFAULT 15,
+    timezone        VARCHAR(64) DEFAULT 'UTC',
+    is_active       BOOLEAN DEFAULT TRUE,
+    notify_email    BOOLEAN DEFAULT TRUE,
+    notify_slack    BOOLEAN DEFAULT FALSE,
+    slack_webhook   VARCHAR(500),
+    notify_webhook  BOOLEAN DEFAULT FALSE,
+    webhook_url     VARCHAR(500),
+    depends_on      BIGINT UNSIGNED,
+    last_ping_at    TIMESTAMP NULL,
+    last_status     ENUM('ok', 'late', 'failed', 'never_run') DEFAULT 'never_run',
+    miss_count      INTEGER DEFAULT 0,
+    expected_at     TIMESTAMP NULL,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (team_id) REFERENCES teams(id),
+    FOREIGN KEY (depends_on) REFERENCES jobs(id)
+);
+
+-- job_runs
+CREATE TABLE job_runs (
+    id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    job_id          BIGINT UNSIGNED NOT NULL,
+    status          ENUM('ok', 'late', 'failed'),
+    pinged_at       TIMESTAMP NULL,
+    expected_at     TIMESTAMP NULL,
+    duration_ms     BIGINT,
+    ip_address      VARCHAR(45),
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (job_id) REFERENCES jobs(id)
+);
+
+-- alerts
+CREATE TABLE alerts (
+    id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    job_id          BIGINT UNSIGNED NOT NULL,
+    alert_type      ENUM('missed', 'recovered', 'failed', 'dependency_failed', 'anomaly'),
+    sent_via        ENUM('email', 'slack', 'webhook'),
+    sent_at         TIMESTAMP NULL,
+    acknowledged_at TIMESTAMP NULL,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (job_id) REFERENCES jobs(id)
+);
+
+-- ==========================================
+-- UPDATE COMMANDS FOR EXISTING DATABASES
+-- ==========================================
+
+-- If you are updating an existing database, run these commands:
+
