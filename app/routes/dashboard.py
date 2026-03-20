@@ -28,8 +28,7 @@ def index():
     job_limit = get_job_limit(current_user.plan)
     personal_jobs_count = Job.query.filter_by(user_id=current_user.id, team_id=None).count()
     
-    # Free plan users can't create teams, limit applies strictly
-    at_limit = job_limit is not None and personal_jobs_count >= job_limit and not current_user.plan in ('pro', 'team')
+    at_limit = job_limit is not None and personal_jobs_count >= job_limit and current_user.plan not in ('pro', 'team')
 
     return render_template('dashboard/index.html', jobs=pagination.items,
                            pagination=pagination,

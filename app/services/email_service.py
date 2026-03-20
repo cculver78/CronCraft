@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (C) 2026 Charles Culver / Edge Case Software, LLC
 
-from flask import current_app, render_template
+from flask import current_app
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from app.extensions import mail

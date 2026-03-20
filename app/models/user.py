@@ -3,8 +3,7 @@
 
 from app.extensions import db
 from flask_login import UserMixin
-from datetime import datetime
-from datetime import timezone as timezone_module
+from datetime import datetime, timezone
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -26,7 +25,7 @@ class User(UserMixin, db.Model):
     grace_period_end = db.Column(db.DateTime, nullable=True)
     api_token_hash = db.Column(db.String(64), unique=True, nullable=True)
     version_check_enabled = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone_module.utc))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
 
     teams_owned = db.relationship('Team', backref='owner', lazy=True)
     jobs = db.relationship('Job', backref='user', lazy=True)

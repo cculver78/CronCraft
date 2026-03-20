@@ -2,6 +2,7 @@
 # Copyright (C) 2026 Charles Culver / Edge Case Software, LLC
 
 import stripe
+from datetime import datetime, timezone, timedelta
 from flask import Blueprint, redirect, request, render_template, current_app, url_for, flash, abort, jsonify
 from flask_login import login_required, current_user
 from app.extensions import db, csrf
@@ -160,7 +161,6 @@ def handle_subscription_change(subscription):
         user.grace_period_end = None
     elif status == 'past_due':
         # Give user a 7-day grace period before downgrading
-        from datetime import datetime, timezone, timedelta
         if not user.grace_period_end:
             user.grace_period_end = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(days=7)
             current_app.logger.info(f"User {user.id} subscription past_due — grace period until {user.grace_period_end}")

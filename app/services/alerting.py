@@ -6,7 +6,25 @@ from flask import render_template, current_app
 import requests
 from app.extensions import db
 from app.models.job import Alert
+from app.plan_limits import is_feature_allowed
 from app.services.email_service import send_email
+
+
+def _get_user_plan(job):
+    """Return the plan string for a job's owner, defaulting to 'free'."""
+    return job.user.plan if getattr(job, 'user', None) else 'free'
+
+
+def _record_alert(job_id, alert_type, sent_via):
+    """Persist an Alert record and commit."""
+    alert = Alert(
+        job_id=job_id,
+        alert_type=alert_type,
+        sent_via=sent_via,
+        sent_at=datetime.now(timezone.utc).replace(tzinfo=None)
+    )
+    db.session.add(alert)
+    db.session.commit()
 
 
 def send_alert(job, alert_type, anomaly_data=None):
@@ -16,6 +34,7 @@ def send_alert(job, alert_type, anomaly_data=None):
     anomaly_data: optional dict with keys: metric, current, mean, stdev, z_score
     """
     subject, message = build_message(job, alert_type, anomaly_data)
+    user_plan = _get_user_plan(job)
 
     if job.notify_email and getattr(job, 'user', None):
         html_body = render_template(
@@ -31,76 +50,40 @@ def send_alert(job, alert_type, anomaly_data=None):
             text_body=message,
             html_body=html_body
         )
+        _record_alert(job.id, alert_type, 'email')
 
-        alert = Alert(
-            job_id=job.id,
-            alert_type=alert_type,
-            sent_via='email',
-            sent_at=datetime.now(timezone.utc).replace(tzinfo=None)
-        )
-        db.session.add(alert)
-        db.session.commit()
+    if job.notify_webhook and job.webhook_url and is_feature_allowed(user_plan, 'allow_webhook'):
+        payload = {
+            'job_id': job.id,
+            'job_name': job.name,
+            'alert_type': alert_type,
+            'status': job.last_status,
+            'expected_at': job.expected_at.isoformat() if job.expected_at else None,
+            'message': message,
+            'timestamp': datetime.now(timezone.utc).isoformat()
+        }
+        if anomaly_data:
+            payload['anomaly'] = anomaly_data
 
-    if job.notify_webhook and job.webhook_url:
-        # Only send webhook if user's plan allows it
-        from app.plan_limits import is_feature_allowed
-        user_plan = job.user.plan if getattr(job, 'user', None) else 'free'
-        if not is_feature_allowed(user_plan, 'allow_webhook'):
-            pass  # Skip webhook — user's plan no longer supports it
-        else:
-            payload = {
-                'job_id': job.id,
-                'job_name': job.name,
-                'alert_type': alert_type,
-                'status': job.last_status,
-                'expected_at': job.expected_at.isoformat() if job.expected_at else None,
-                'message': message,
-                'timestamp': datetime.now(timezone.utc).isoformat()
-            }
-            if anomaly_data:
-                payload['anomaly'] = anomaly_data
-            
-            try:
-                # Short timeout so we don't block the scheduler thread for long
-                response = requests.post(job.webhook_url, json=payload, timeout=5)
-                response.raise_for_status()
-                
-                alert = Alert(
-                    job_id=job.id,
-                    alert_type=alert_type,
-                    sent_via='webhook',
-                    sent_at=datetime.now(timezone.utc).replace(tzinfo=None)
-                )
-                db.session.add(alert)
-                db.session.commit()
-            except requests.exceptions.RequestException as e:
-                current_app.logger.warning(f'Webhook delivery failed for job {job.id} ({job.name}): {e}')
+        try:
+            response = requests.post(job.webhook_url, json=payload, timeout=5)
+            response.raise_for_status()
+            _record_alert(job.id, alert_type, 'webhook')
+        except requests.exceptions.RequestException as e:
+            current_app.logger.warning(f'Webhook delivery failed for job {job.id} ({job.name}): {e}')
 
-    if job.notify_slack and job.slack_webhook:
-        # Only send Slack if user's plan allows it
-        from app.plan_limits import is_feature_allowed
-        user_plan = job.user.plan if getattr(job, 'user', None) else 'free'
-        if not is_feature_allowed(user_plan, 'allow_slack'):
-            pass  # Skip Slack — user's plan no longer supports it
-        else:
-            slack_payload = {
-                "text": f"{subject}\n{message}\n*Status:* {job.last_status}\n*Expected At:* {job.expected_at.isoformat() if job.expected_at else 'N/A'}"
-            }
-            
-            try:
-                response = requests.post(job.slack_webhook, json=slack_payload, timeout=5)
-                response.raise_for_status()
-                
-                alert = Alert(
-                    job_id=job.id,
-                    alert_type=alert_type,
-                    sent_via='slack',
-                    sent_at=datetime.now(timezone.utc).replace(tzinfo=None)
-                )
-                db.session.add(alert)
-                db.session.commit()
-            except requests.exceptions.RequestException as e:
-                current_app.logger.warning(f'Slack delivery failed for job {job.id} ({job.name}): {e}')
+    if job.notify_slack and job.slack_webhook and is_feature_allowed(user_plan, 'allow_slack'):
+        slack_payload = {
+            "text": f"{subject}\n{message}\n*Status:* {job.last_status}\n*Expected At:* {job.expected_at.isoformat() if job.expected_at else 'N/A'}"
+        }
+
+        try:
+            response = requests.post(job.slack_webhook, json=slack_payload, timeout=5)
+            response.raise_for_status()
+            _record_alert(job.id, alert_type, 'slack')
+        except requests.exceptions.RequestException as e:
+            current_app.logger.warning(f'Slack delivery failed for job {job.id} ({job.name}): {e}')
+
 
 def build_message(job, alert_type, anomaly_data=None):
     if alert_type == 'missed':

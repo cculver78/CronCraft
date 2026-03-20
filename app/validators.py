@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (C) 2026 Charles Culver / Edge Case Software, LLC
 
+import ipaddress
 import re
 from urllib.parse import urlparse
 
@@ -35,7 +36,6 @@ def validate_webhook_url(url):
         return 'Webhook URL must include a hostname.'
 
     # Block obviously dangerous targets
-    import ipaddress
     try:
         ip = ipaddress.ip_address(hostname)
         if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved:

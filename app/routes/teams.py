@@ -9,6 +9,14 @@ from app.models.user import User
 
 bp = Blueprint('teams', __name__, url_prefix='/dashboard/teams')
 
+
+def _is_team_admin(team, user_id):
+    """Return True if the user owns the team or has an 'admin' membership role."""
+    if team.owner_id == user_id:
+        return True
+    member = TeamMember.query.filter_by(team_id=team.id, user_id=user_id).first()
+    return member is not None and member.role == 'admin'
+
 @bp.route('/')
 @login_required
 def index():
@@ -55,30 +63,22 @@ def create():
 @login_required
 def detail(id):
     team = Team.query.get_or_404(id)
-    
-    # Check authorization
-    is_owner = team.owner_id == current_user.id
+
+    # Any team member (or owner) can view
     member_record = TeamMember.query.filter_by(team_id=team.id, user_id=current_user.id).first()
-    
-    if not is_owner and not member_record:
+    if team.owner_id != current_user.id and not member_record:
         abort(403)
-        
-    is_admin = is_owner or (member_record and member_record.role == 'admin')
-    
+
+    is_admin = _is_team_admin(team, current_user.id)
     members = TeamMember.query.filter_by(team_id=team.id).all()
-    
+
     return render_template('teams/detail.html', team=team, members=members, is_admin=is_admin, current_user_id=current_user.id)
 
 @bp.route('/<int:id>/members/add', methods=['POST'])
 @login_required
 def add_member(id):
     team = Team.query.get_or_404(id)
-    
-    # Check authorization
-    is_owner = team.owner_id == current_user.id
-    member_record = TeamMember.query.filter_by(team_id=team.id, user_id=current_user.id).first()
-    
-    if not is_owner and not (member_record and member_record.role == 'admin'):
+    if not _is_team_admin(team, current_user.id):
         abort(403)
         
     identifier = request.form.get('identifier', '').strip()
@@ -115,12 +115,7 @@ def add_member(id):
 @login_required
 def change_role(team_id, member_id):
     team = Team.query.get_or_404(team_id)
-    
-    # Check authorization
-    is_owner = team.owner_id == current_user.id
-    member_record = TeamMember.query.filter_by(team_id=team.id, user_id=current_user.id).first()
-    
-    if not is_owner and not (member_record and member_record.role == 'admin'):
+    if not _is_team_admin(team, current_user.id):
         abort(403)
         
     target_member = TeamMember.query.filter_by(id=member_id, team_id=team.id).first_or_404()
@@ -144,15 +139,11 @@ def change_role(team_id, member_id):
 @login_required
 def remove_member(team_id, member_id):
     team = Team.query.get_or_404(team_id)
-    
     target_member = TeamMember.query.filter_by(id=member_id, team_id=team.id).first_or_404()
-    
-    # Check authorization (admin, owner, or self)
-    is_owner = team.owner_id == current_user.id
-    member_record = TeamMember.query.filter_by(team_id=team.id, user_id=current_user.id).first()
-    is_admin = is_owner or (member_record and member_record.role == 'admin')
+
+    # Allow team admins/owners, or the member removing themselves
+    is_admin = _is_team_admin(team, current_user.id)
     is_self = target_member.user_id == current_user.id
-    
     if not is_admin and not is_self:
         abort(403)
         

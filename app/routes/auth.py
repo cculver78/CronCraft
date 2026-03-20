@@ -202,10 +202,6 @@ def reset_password(token):
         if password != confirm:
             flash('Passwords do not match.', 'danger')
             return render_template('auth/reset_password.html', token=token)
-        
-        if len(password) < 8:
-            flash('Password must be at least 8 characters.', 'danger')
-            return render_template('auth/reset_password.html', token=token)
 
         pw_error = validate_password(password)
         if pw_error:
