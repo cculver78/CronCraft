@@ -769,6 +769,22 @@
   .marketing-article ul, .marketing-article ol { margin: 0 0 1rem 1.25rem; }
   .marketing-article a { color: var(--green); text-decoration: none; }
   .marketing-article a:hover { text-decoration: underline; }
+  /* Buttons inside prose: keep homepage contrast (green fill + dark text), not body-link green. */
+  .marketing-article a.btn-primary,
+  .marketing-article a.btn-primary:hover {
+    color: #0a0e0c;
+    text-decoration: none;
+  }
+  .marketing-article a.btn-primary:hover { background: #16a34a; }
+  .marketing-article a.btn-ghost,
+  .marketing-article a.btn-ghost:hover {
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .marketing-article a.btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--border-bright);
+  }
   .marketing-article .lead { font-size: 15px; color: var(--text); }
   .data-table-wrap { overflow-x: auto; margin: 1.25rem 0; border: 1px solid var(--border); border-radius: 8px; }
   .data-table {
@@ -870,9 +886,13 @@
   }
   .site-footer-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1.5rem 2rem;
+    /* Explicit columns so sections sit in a horizontal row (min-width:0 avoids 1-column collapse from content min-size). */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem 2rem;
     margin-bottom: 2rem;
+  }
+  .site-footer-col {
+    min-width: 0;
   }
   .site-footer-col h3 {
     font-size: 10px;
@@ -905,8 +925,10 @@
   .site-footer-bottom .footer-legal a { color: var(--text-dim); text-decoration: none; }
   .site-footer-bottom .footer-legal a:hover { color: var(--text-muted); }
 
+  @media (max-width: 900px) {
+    .site-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
   @media (max-width: 768px) {
-    .site-footer-grid { grid-template-columns: 1fr 1fr; }
     .urgent-banner { padding-left: 1rem; padding-right: 1rem; font-size: 12px; }
   }
   @media (max-width: 480px) {

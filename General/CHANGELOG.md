@@ -1,6 +1,12 @@
 # Changelog
 
-## 20260329.00
+## 20260329.02
+
+### Marketing & SEO
+
+- Marketing pages: restore black text on green `.btn-primary` and muted text on `.btn-ghost` (prose link styles no longer override buttons)
+
+- Footer link grid: use explicit 4-column (2×4) layout on desktop so columns align horizontally; narrow breakpoints use 2 then 1 column
 
 ### Marketing & SEO
 
