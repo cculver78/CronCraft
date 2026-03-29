@@ -1,0 +1,57 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Blog</p>
+<h1>How to Monitor Cron Jobs (Without Learning the Hard Way)</h1>
+<p class="lead">Every team has a story: the backup job “ran” for six months without backing anything up, the report cron died when disk filled, or a deploy removed the crontab line. Cron does not call you when it breaks. This guide walks through practical ways to monitor cron jobs and why heartbeat pings became the default pattern for serious teams.</p>
+
+<h2>Why cron fails silently</h2>
+<p>Traditional cron emails stdout/stderr to MAILTO — if anyone still reads that mailbox. Many images disable mail, jobs redirect to <code>/dev/null</code>, or failures happen before your script prints anything. systemd timers and cloud schedulers have the same class of problem: the platform thinks it launched the job successfully even when business logic failed.</p>
+<p>So the first lesson: <strong>launch success ≠ job success</strong>. Monitoring has to observe outcomes, not just process start.</p>
+
+<h2>Approach 1: Log files and grep</h2>
+<p>Write structured logs and scan them with an agent or a log platform. This works when you already run centralized logging. Downsides: you must define what “healthy” looks like in log lines, handle clock skew, and pay for retention. It is powerful but heavy for a single nightly script.</p>
+
+<h2>Approach 2: Exit codes and mail</h2>
+<p>Remove redirects so cron emails failures. Fine for one server and a human who reads mail. Breaks when mail is misconfigured, spam-filtered, or when multiple jobs interleave in one inbox.</p>
+
+<h2>Approach 3: Heartbeat / dead man's switch</h2>
+<p>At the end of a successful run, your job calls an HTTPS URL. An external service records the ping and compares it to the schedule. If the ping is missing past a grace period, you get paged. This is model-neutral: bash, Python, Kubernetes CronJob, Windows Task Scheduler — anything with outbound HTTPS works.</p>
+<p>CronCraft is one implementation of that pattern; the conceptual write-up is in <a href="{{ url_for('marketing.blog_dead_mans_switch_pattern') }}">dead man's switch pattern explained</a>.</p>
+
+<h2>Choosing thresholds</h2>
+<p>Match expected frequency to reality. A job that “should finish daily by 4am” needs a window that tolerates slow runs — that is what grace periods are for. Too tight and you get alert fatigue; too loose and real outages hide inside the buffer.</p>
+
+<h2>Explicit failure signals</h2>
+<p>Sometimes your script knows it failed before exit — catch blocks, partial writes, validation errors. Hitting a <code>/fail</code> endpoint (CronCraft supports this) records failure immediately instead of waiting for silence. Pair with <a href="{{ url_for('marketing.blog_prevent_silent_cron_failures') }}">preventing silent cron failures</a> for narrative.</p>
+
+<h2>Dependencies between jobs</h2>
+<p>When job B must not run unless job A succeeded, ad-hoc file locks get brittle. CronCraft models chains so downstream work does not pretend it is healthy when upstream stopped pinging — see <a href="{{ url_for('marketing.blog_cron_job_dependencies') }}">cron job dependency management</a>.</p>
+
+<h2>Operational checklist</h2>
+<ul>
+  <li>One ping URL per logical job, stored next to the script in your runbook.</li>
+  <li>Schedules in CronCraft match crontab or platform scheduler.</li>
+  <li>Test fire a run after deploy; confirm the dashboard moves.</li>
+  <li>On-call rotation receives alerts through a channel people actually read (email free tier; Slack on Pro).</li>
+</ul>
+
+<h2>Security and token handling</h2>
+<p>Treat ping URLs like passwords. Anyone who can guess or intercept the token could spam fake successes or failures. Store tokens in your secret manager, pass them via environment variables in production, and rotate after incidents. CronCraft’s dashboard lets you regenerate URLs if a token leaks.</p>
+
+<h2>CI and one-off jobs</h2>
+<p>Scheduled monitoring also applies to pipelines that “should run daily” but are implemented as CI workflows. If the workflow does not execute, no heartbeat fires — same signal as cron silence. You can curl from the final step of a GitHub Action, GitLab job, or Jenkins stage.</p>
+
+<h2>Multi-environment hygiene</h2>
+<p>Give production, staging, and dev separate CronCraft jobs. Mixing schedules across environments creates alert noise (“staging did not ping production’s window”). Name jobs so on-call knows which fleet broke.</p>
+
+<h2>When not to use heartbeats alone</h2>
+<p>Heartbeats prove liveness on a schedule, not correctness of output. If the job runs but writes wrong data, you still need assertions, reconciliation checks, or downstream validation. Combine external pings with internal invariants.</p>
+
+<h2>Where CronCraft fits</h2>
+<p>CronCraft focuses on heartbeat monitoring, history, and alerts — hosted or <a href="{{ url_for('marketing.self_hosted_cron_monitoring') }}">self-hosted</a>. It is not a log aggregator or APM. If you want the smallest change to an existing bash job, add one <code>curl</code> line and register the schedule; see <a href="{{ url_for('marketing.use_case_bash') }}">bash examples</a>.</p>
+
+<div class="cta-inline">
+  <p>Free tier: 10 jobs, email alerts.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Start free</a>
+</div>
+{% endblock %}

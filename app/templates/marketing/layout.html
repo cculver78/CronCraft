@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block head_extra %}
+<link rel="canonical" href="https://croncraft.app{{ canonical_path }}">
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ meta_description }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://croncraft.app{{ canonical_path }}">
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block meta_description %}{{ meta_description }}{% endblock %}
+{% block content %}
+<article class="marketing-article">
+  {% block marketing_content %}{% endblock %}
+</article>
+{% endblock %}

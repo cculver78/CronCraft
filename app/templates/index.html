@@ -1,5 +1,20 @@
 {% extends "base.html" %}
+{% block head_extra %}
+<link rel="canonical" href="https://croncraft.app/">
+<meta property="og:title" content="CronCraft™ — Cron Job Monitoring">
+<meta property="og:description" content="Monitor your cron jobs with dead man's switch alerts. Know the moment a job fails, hangs, or stops running.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://croncraft.app/">
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
 {% block content %}
+
+<div class="urgent-banner" role="note">
+  Migrating from Cronhub? They sunset June 30, 2026 — we have a drop-in ping URL flow.
+  <a href="{{ url_for('marketing.cronhub_alternative') }}">Cronhub alternative</a>
+  ·
+  <a href="{{ url_for('marketing.cronhub_migration') }}">Migration guide</a>
+</div>
 
 <div class="hero">
   <div class="hero-copy">
@@ -175,6 +190,41 @@ curl -fsS <span class="t-ok">https://croncraft.app/ping/abc123xyz</span> \
 
 <span class="t-comment"># That's it. CronCraft handles the rest.</span>
 </pre>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="resources-section" id="resources" aria-labelledby="resources-heading">
+  <p class="section-label">Resources</p>
+  <h2 id="resources-heading">Learn more</h2>
+  <p class="section-sub">Guides, comparisons, and use cases — same monitoring model as the product, with copy-paste examples.</p>
+  <div class="resources-grid">
+    <div class="resource-card">
+      <div class="resource-pill">Time-sensitive</div>
+      <a href="{{ url_for('marketing.cronhub_alternative') }}">Cronhub alternative</a>
+      <p>Shutdown June 30, 2026 — swap ping URLs and keep monitoring.</p>
+    </div>
+    <div class="resource-card">
+      <a href="{{ url_for('marketing.self_hosted_cron_monitoring') }}">Self-hosted cron monitoring</a>
+      <p>Docker Compose, AGPL, own your data.</p>
+    </div>
+    <div class="resource-card">
+      <a href="{{ url_for('marketing.use_case_database_backups') }}">Database backup jobs</a>
+      <p>pg_dump pattern with success ping.</p>
+    </div>
+    <div class="resource-card">
+      <a href="{{ url_for('marketing.blog_how_to_monitor_cron_jobs') }}">How to monitor cron jobs</a>
+      <p>Heartbeats vs logs vs mail — full walkthrough.</p>
+    </div>
+    <div class="resource-card">
+      <a href="{{ url_for('marketing.cron_job_monitoring') }}">Cron job monitoring</a>
+      <p>Product-focused overview for SEO readers.</p>
+    </div>
+    <div class="resource-card">
+      <a href="{{ url_for('marketing.croncraft_vs_healthchecks') }}">CronCraft vs Healthchecks.io</a>
+      <p>Honest comparison table.</p>
     </div>
   </div>
 </section>

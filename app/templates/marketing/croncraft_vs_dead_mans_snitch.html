@@ -1,0 +1,26 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Compare</p>
+<h1>CronCraft vs Dead Man's Snitch</h1>
+<p class="lead">Both are dead man's switch monitors: silence means trouble. CronCraft adds <strong>run history</strong>, <strong>grace periods</strong>, <strong>dependency chains</strong> (Pro), and a <strong>self-hosted</strong> path.</p>
+
+<h2>At a glance</h2>
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead><tr><th></th><th>CronCraft</th><th>Dead Man's Snitch</th></tr></thead>
+    <tbody>
+      <tr><td>Free tier</td><td>10 jobs</td><td>Very limited (1 snitch)</td></tr>
+      <tr><td>Self-host</td><td>Docker</td><td>Hosted only</td></tr>
+      <tr><td>Chains / DAG</td><td>Yes Pro+</td><td>No</td></tr>
+      <tr><td>Voice / branding</td><td>Developer terminal aesthetic</td><td>Playful “snitch” brand</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>Narrative version: <a href="{{ url_for('marketing.dead_mans_snitch_alternative') }}">Dead Man's Snitch alternative</a>.</p>
+
+<div class="cta-inline">
+  <p>Migrate from Cronhub? <a href="{{ url_for('marketing.cronhub_migration') }}" style="color:var(--green);font-weight:700;">Migration guide</a></p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Start free</a>
+</div>
+{% endblock %}

@@ -14,6 +14,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{% block title %}CronCraft™ — Cron Job Monitoring{% endblock %}</title>
 <meta name="description" content="{% block meta_description %}Monitor your cron jobs with dead man's switch alerts. Know the moment a job fails, hangs, or stops running.{% endblock %}">
+{% block head_extra %}{% endblock %}
 <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo_icon.png') }}">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
 <style>
@@ -709,6 +710,208 @@
   .flash-danger { border-color: var(--red); color: var(--red); background: rgba(239, 68, 68, 0.1); }
   .flash-info { border-color: var(--green); color: var(--green); background: var(--green-glow); }
   .flash-success { border-color: var(--green); color: var(--green); background: var(--green-glow); }
+
+  /* Marketing / SEO pages */
+  .urgent-banner {
+    background: linear-gradient(90deg, rgba(245,158,11,0.12), rgba(34,197,94,0.08));
+    border-bottom: 1px solid var(--border-bright);
+    padding: 10px 2rem;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .urgent-banner a {
+    color: var(--green);
+    font-weight: 700;
+    text-decoration: none;
+    margin-left: 4px;
+  }
+  .urgent-banner a:hover { text-decoration: underline; }
+
+  .marketing-article {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+  .marketing-article .breadcrumb {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.04em;
+  }
+  .marketing-article .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+  .marketing-article .breadcrumb a:hover { color: var(--green); }
+  .marketing-article h1 {
+    font-family: var(--serif);
+    font-size: clamp(1.75rem, 4vw, 2.35rem);
+    margin-bottom: 1.25rem;
+    line-height: 1.15;
+  }
+  .marketing-article h2 {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .marketing-article h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .marketing-article p, .marketing-article li {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+  .marketing-article ul, .marketing-article ol { margin: 0 0 1rem 1.25rem; }
+  .marketing-article a { color: var(--green); text-decoration: none; }
+  .marketing-article a:hover { text-decoration: underline; }
+  .marketing-article .lead { font-size: 15px; color: var(--text); }
+  .data-table-wrap { overflow-x: auto; margin: 1.25rem 0; border: 1px solid var(--border); border-radius: 8px; }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .data-table th, .data-table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table th {
+    background: var(--bg3);
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table td { color: var(--text-muted); }
+  .marketing-article .code-block { margin: 1.25rem 0; }
+  .marketing-article .code-block::before { content: 'example'; }
+  .faq-block { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+  .faq-block dt {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 13px;
+    margin-top: 1.25rem;
+  }
+  .faq-block dd {
+    margin: 0.5rem 0 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+  .cta-inline {
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem;
+    background: var(--bg2);
+    border: 1px solid var(--border-bright);
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    justify-content: space-between;
+  }
+  .cta-inline p { margin: 0; font-size: 13px; color: var(--text-muted); }
+
+  .resources-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .resource-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    transition: border-color 0.15s;
+  }
+  .resource-card:hover { border-color: var(--border-bright); }
+  .resource-card a {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .resource-card a:hover { color: var(--green); }
+  .resource-card p {
+    margin: 0.5rem 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+  .resource-pill {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.35rem;
+  }
+
+  .site-footer-wide {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .site-footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1.5rem 2rem;
+    margin-bottom: 2rem;
+  }
+  .site-footer-col h3 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--green);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+  }
+  .site-footer-col ul { list-style: none; margin: 0; padding: 0; }
+  .site-footer-col li { margin-bottom: 6px; }
+  .site-footer-col a {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .site-footer-col a:hover { color: var(--text); }
+  .site-footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .site-footer-bottom .footer-legal { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .site-footer-bottom .footer-legal a { color: var(--text-dim); text-decoration: none; }
+  .site-footer-bottom .footer-legal a:hover { color: var(--text-muted); }
+
+  @media (max-width: 768px) {
+    .site-footer-grid { grid-template-columns: 1fr 1fr; }
+    .urgent-banner { padding-left: 1rem; padding-right: 1rem; font-size: 12px; }
+  }
+  @media (max-width: 480px) {
+    .site-footer-grid { grid-template-columns: 1fr; }
+  }
 </style>
 
 </head>
@@ -769,19 +972,7 @@
   <main>
     {% block content %}{% endblock %}
   </main>
-<footer>
-  <div>
-    <span style="color: var(--text-muted);">&copy; 2026 CronCraft&trade;. All rights reserved.</span> <span style="color: var(--text-dim);">&mdash;</span> <a href="https://edgecasesoftware.dev" style="color: var(--text-dim); text-decoration: none;">Edge Case Software, LLC</a>
-  </div>
-  <div style="display: flex; align-items: center; gap: 1.5rem;">
-    <div class="footer-links">
-      <a href="https://edgecasesoftware.dev/privacy.html">Privacy</a>
-      <a href="https://edgecasesoftware.dev/terms.html">Terms</a>
-      <a href="https://edgecasesoftware.dev/sla.html">SLA</a>
-    </div>
-    <span style="color: var(--text-dim); font-size: 11px; letter-spacing: 0.03em;">v{{ app_version }}</span>
-  </div>
-</footer>
+{% include 'partials/_site_footer.html' %}
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {

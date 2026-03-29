@@ -1,0 +1,25 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Topics</p>
+<h1>Heartbeat Monitoring for Batch and Cron Workloads</h1>
+<p class="lead">A <strong>heartbeat</strong> (or “success ping”) tells an external service: “this run completed.” If the heartbeat stops arriving, the service assumes failure — the classic dead man's switch pattern.</p>
+<p>CronCraft is built around HTTPS heartbeats. Compare with log scraping or email-only approaches in <a href="{{ url_for('marketing.blog_how_to_monitor_cron_jobs') }}">how to monitor cron jobs</a>.</p>
+
+<h2>Why heartbeats win for cron</h2>
+<ul>
+  <li>Works from any host that has outbound HTTPS.</li>
+  <li>Success is explicit — no guessing from exit codes trapped in mail spool.</li>
+  <li>One line to add at the end of a script.</li>
+</ul>
+
+<h2>Example</h2>
+<div class="code-block"><pre style="margin:0;font-family:inherit;">./run_report.sh &amp;&amp; curl -fsS https://croncraft.app/ping/YOUR_TOKEN &gt; /dev/null
+</pre></div>
+
+<p>Related: <a href="{{ url_for('marketing.dead_mans_switch_monitoring') }}">Dead man's switch monitoring</a> and <a href="{{ url_for('marketing.background_job_monitoring') }}">background job monitoring</a>.</p>
+
+<div class="cta-inline">
+  <p>Free tier includes email alerts on missed heartbeats.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Start free</a>
+</div>
+{% endblock %}

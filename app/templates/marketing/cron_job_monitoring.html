@@ -1,0 +1,22 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Product</p>
+<h1>Cron Job Monitoring That Alerts When Pings Stop</h1>
+<p class="lead">CronCraft is a <strong>heartbeat monitor</strong>: your job sends one HTTP request when it finishes successfully. If the ping does not arrive on schedule (plus your grace period), you get alerted — email on every tier, Slack and webhooks on Pro+.</p>
+<p>No agent on the server. Works with Linux cron, macOS launchd, or anything that can run <code>curl</code>. For platform-specific guides, see <a href="{{ url_for('marketing.use_case_bash') }}">Bash</a>, <a href="{{ url_for('marketing.use_case_python') }}">Python</a>, or <a href="{{ url_for('marketing.use_case_kubernetes') }}">Kubernetes CronJobs</a>.</p>
+
+<h2>What “monitoring” means here</h2>
+<p>We do not parse your syslog or ship a daemon. We answer one question: <strong>did the job prove it completed on time?</strong> That is the same model as Healthchecks-style monitors and is ideal for backups, billing batches, and ETL.</p>
+
+<h2>Grace periods</h2>
+<p>Long-running jobs get a configurable buffer before CronCraft treats a missed window as an incident — fewer 3am pages when a job is slow but healthy. That behavior pairs well with <a href="{{ url_for('marketing.dead_mans_switch_monitoring') }}">dead man's switch monitoring</a> terminology.</p>
+
+<h2>Dependency chains (Pro+)</h2>
+<p>Model job B depending on job A so a broken upstream does not leave downstream work silently stale. More in <a href="{{ url_for('marketing.blog_cron_job_dependencies') }}">cron job dependency management</a>.</p>
+
+<div class="cta-inline">
+  <p>10 free jobs — try the hosted service or self-host.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Start free</a>
+  <a href="{{ url_for('marketing.self_hosted_cron_monitoring') }}" class="btn-ghost">Self-hosted</a>
+</div>
+{% endblock %}

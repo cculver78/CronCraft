@@ -1,0 +1,33 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Use cases</p>
+<h1>Monitor Python Scheduled Tasks with CronCraft</h1>
+<p class="lead">CronCraft is a Python/Flask codebase — integrating from your jobs feels natural. Call the ping URL when your script finishes successfully.</p>
+<p>Stack-agnostic overview: <a href="{{ url_for('marketing.background_job_monitoring') }}">background job monitoring</a>.</p>
+
+<h2>urllib (stdlib)</h2>
+<div class="code-block"><pre style="margin:0;font-family:inherit;"><span class="t-comment">import urllib.request</span>
+
+def ping_croncraft():
+    urllib.request.urlopen(
+        "https://croncraft.app/ping/YOUR_TOKEN",
+        timeout=30,
+    ).read()
+
+<span class="t-comment"># main()</span>
+run_etl()
+ping_croncraft()
+</pre></div>
+
+<h2>requests</h2>
+<div class="code-block"><pre style="margin:0;font-family:inherit;">import requests
+requests.get("https://croncraft.app/ping/YOUR_TOKEN", timeout=30).raise_for_status()
+</pre></div>
+
+<p>On failure, raise before ping or call the <code>/fail</code> endpoint from <code>except</code> blocks.</p>
+
+<div class="cta-inline">
+  <p>Copy the real URL from your job settings.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Register</a>
+</div>
+{% endblock %}

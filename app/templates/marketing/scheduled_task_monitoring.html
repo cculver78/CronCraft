@@ -1,0 +1,21 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Topics</p>
+<h1>Scheduled Task Monitoring Beyond Linux Cron</h1>
+<p class="lead">If it runs on a schedule and should finish, you can ping CronCraft when it succeeds — whether the scheduler is <strong>systemd timers</strong>, <strong>Windows Task Scheduler</strong>, <strong>Heroku Scheduler</strong>, or classic cron.</p>
+<p>Core idea matches <a href="{{ url_for('marketing.cron_job_monitoring') }}">cron job monitoring</a>: one HTTPS success ping per run. Miss the window → alert.</p>
+
+<h2>Windows</h2>
+<p>PowerShell or <code>curl.exe</code> after the task action completes. Walkthrough: <a href="{{ url_for('marketing.use_case_windows_scheduled_tasks') }}">Windows scheduled tasks</a>.</p>
+
+<h2>Cloud schedulers</h2>
+<p>Heroku pattern: <a href="{{ url_for('marketing.use_case_heroku_scheduler') }}">Heroku Scheduler + CronCraft</a>. Same curl line at the end of your worker.</p>
+
+<h2>Kubernetes</h2>
+<p>CronJob resources can call CronCraft from the container that performs the work: <a href="{{ url_for('marketing.use_case_kubernetes') }}">Kubernetes CronJob monitoring</a>.</p>
+
+<div class="cta-inline">
+  <p>Register the schedule in CronCraft to match your platform.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Create a job</a>
+</div>
+{% endblock %}

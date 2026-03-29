@@ -1,0 +1,23 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Blog</p>
+<h1>Cron Job Reliability Best Practices</h1>
+<p class="lead">Production cron is boring when done right: idempotent scripts, explicit logging, timeouts, and monitoring that does not depend on humans reading mailbox spool.</p>
+
+<h2>Idempotency</h2>
+<p>Assume reruns. Partial writes, duplicate charges, and double emails happen when jobs retry. Design for safe replays.</p>
+
+<h2>Timeouts and resources</h2>
+<p>Bound external calls. A stuck API should not hold a worker forever — use <code>timeout</code> wrappers or client-side limits.</p>
+
+<h2>Monitoring</h2>
+<p>Use heartbeats or equivalent external confirmation. Details: <a href="{{ url_for('marketing.blog_how_to_monitor_cron_jobs') }}">how to monitor cron jobs</a> and <a href="{{ url_for('marketing.blog_prevent_silent_cron_failures') }}">silent failures</a>.</p>
+
+<h2>Documentation</h2>
+<p>Every cron line should map to an owner, purpose, and on-call expectation in your runbook. Future you will not remember why <code>0 3 * * 0</code> exists.</p>
+
+<div class="cta-inline">
+  <p>CronCraft: grace periods + history + alerts.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Start free</a>
+</div>
+{% endblock %}

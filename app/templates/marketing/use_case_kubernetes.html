@@ -1,0 +1,37 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Use cases</p>
+<h1>Kubernetes CronJob Monitoring</h1>
+<p class="lead">Kubernetes runs your CronJob, but it will happily keep scheduling even when the business logic inside always fails. Ping CronCraft from the container when the work succeeds.</p>
+<p>Teams comparing platforms often look at Cronitor too — see <a href="{{ url_for('marketing.croncraft_vs_cronitor') }}">CronCraft vs Cronitor</a>.</p>
+
+<h2>Example job snippet</h2>
+<div class="code-block"><pre style="margin:0;font-family:inherit;"><span class="t-comment"># Simplified: run script then ping</span>
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nightly-report
+spec:
+  schedule: "0 7 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: worker
+            image: your-image:tag
+            command:
+            - /bin/sh
+            - -c
+            - |
+              ./run_report.sh &amp;&amp; curl -fsS https://croncraft.app/ping/YOUR_TOKEN &gt; /dev/null
+          restartPolicy: OnFailure
+</pre></div>
+
+<p>Use secrets for the token — do not hardcode in Git. For Pro clusters, consider <a href="{{ url_for('marketing.self_hosted_cron_monitoring') }}">self-hosted CronCraft</a> inside the VPC.</p>
+
+<div class="cta-inline">
+  <p>Register the same cron string in CronCraft.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Create job</a>
+</div>
+{% endblock %}

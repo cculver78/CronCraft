@@ -1,0 +1,90 @@
+<footer class="site-footer-wide">
+  <div class="site-footer-grid">
+    <div class="site-footer-col">
+      <h3>Product</h3>
+      <ul>
+        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+        <li><a href="{{ url_for('marketing.cron_job_monitoring') }}">Cron job monitoring</a></li>
+        <li><a href="{{ url_for('marketing.self_hosted_cron_monitoring') }}">Self-hosted</a></li>
+        <li><a href="{{ url_for('main.index') }}#pricing">Pricing</a></li>
+        <li><a href="https://github.com/cculver78/CronCraft#integrating-a-job" target="_blank" rel="noopener noreferrer">Docs (GitHub)</a></li>
+      </ul>
+    </div>
+    <div class="site-footer-col">
+      <h3>Cronhub</h3>
+      <ul>
+        <li><a href="{{ url_for('marketing.cronhub_alternative') }}">Cronhub alternative</a></li>
+        <li><a href="{{ url_for('marketing.cronhub_migration') }}">Cronhub migration</a></li>
+      </ul>
+    </div>
+    <div class="site-footer-col">
+      <h3>Compare</h3>
+      <ul>
+        <li><a href="{{ url_for('marketing.healthchecks_alternative') }}">vs Healthchecks.io</a></li>
+        <li><a href="{{ url_for('marketing.cronitor_alternative') }}">vs Cronitor</a></li>
+        <li><a href="{{ url_for('marketing.dead_mans_snitch_alternative') }}">vs Dead Man's Snitch</a></li>
+        <li><a href="{{ url_for('marketing.croncraft_vs_healthchecks') }}">CronCraft vs Healthchecks</a></li>
+        <li><a href="{{ url_for('marketing.croncraft_vs_cronitor') }}">CronCraft vs Cronitor</a></li>
+        <li><a href="{{ url_for('marketing.croncraft_vs_dead_mans_snitch') }}">CronCraft vs DMS</a></li>
+      </ul>
+    </div>
+    <div class="site-footer-col">
+      <h3>Use cases</h3>
+      <ul>
+        <li><a href="{{ url_for('marketing.use_case_database_backups') }}">Database backups</a></li>
+        <li><a href="{{ url_for('marketing.use_case_kubernetes') }}">Kubernetes</a></li>
+        <li><a href="{{ url_for('marketing.use_case_python') }}">Python</a></li>
+        <li><a href="{{ url_for('marketing.use_case_bash') }}">Bash</a></li>
+        <li><a href="{{ url_for('marketing.use_case_heroku_scheduler') }}">Heroku Scheduler</a></li>
+        <li><a href="{{ url_for('marketing.use_case_windows_scheduled_tasks') }}">Windows tasks</a></li>
+      </ul>
+    </div>
+    <div class="site-footer-col">
+      <h3>Topics</h3>
+      <ul>
+        <li><a href="{{ url_for('marketing.scheduled_task_monitoring') }}">Scheduled tasks</a></li>
+        <li><a href="{{ url_for('marketing.heartbeat_monitoring') }}">Heartbeat monitoring</a></li>
+        <li><a href="{{ url_for('marketing.dead_mans_switch_monitoring') }}">Dead man's switch</a></li>
+        <li><a href="{{ url_for('marketing.background_job_monitoring') }}">Background jobs</a></li>
+        <li><a href="{{ url_for('marketing.free_cron_monitoring') }}">Free tier</a></li>
+        <li><a href="{{ url_for('marketing.open_source_cron_monitoring') }}">Open source</a></li>
+      </ul>
+    </div>
+    <div class="site-footer-col">
+      <h3>Integrations</h3>
+      <ul>
+        <li><a href="{{ url_for('marketing.integration_slack') }}">Slack alerts</a></li>
+      </ul>
+    </div>
+    <div class="site-footer-col">
+      <h3>Blog</h3>
+      <ul>
+        <li><a href="{{ url_for('marketing.blog_how_to_monitor_cron_jobs') }}">How to monitor cron jobs</a></li>
+        <li><a href="{{ url_for('marketing.blog_prevent_silent_cron_failures') }}">Silent failures</a></li>
+        <li><a href="{{ url_for('marketing.blog_dead_mans_switch_pattern') }}">Dead man's switch pattern</a></li>
+        <li><a href="{{ url_for('marketing.blog_cron_job_best_practices') }}">Best practices</a></li>
+        <li><a href="{{ url_for('marketing.blog_cron_job_dependencies') }}">Job dependencies</a></li>
+        <li><a href="{{ url_for('marketing.blog_cron_job_not_running') }}">Cron not running</a></li>
+      </ul>
+    </div>
+    <div class="site-footer-col">
+      <h3>Open source</h3>
+      <ul>
+        <li><a href="https://github.com/cculver78/CronCraft" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="site-footer-bottom">
+    <div>
+      <span style="color: var(--text-muted);">&copy; 2026 CronCraft&trade;. All rights reserved.</span>
+      <span style="color: var(--text-dim);"> &mdash; </span>
+      <a href="https://edgecasesoftware.dev" style="color: var(--text-dim); text-decoration: none;">Edge Case Software, LLC</a>
+    </div>
+    <div class="footer-legal">
+      <a href="https://edgecasesoftware.dev/privacy.html">Privacy</a>
+      <a href="https://edgecasesoftware.dev/terms.html">Terms</a>
+      <a href="https://edgecasesoftware.dev/sla.html">SLA</a>
+      <span style="color: var(--text-dim); font-size: 11px; letter-spacing: 0.03em;">v{{ app_version }}</span>
+    </div>
+  </div>
+</footer>

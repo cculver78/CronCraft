@@ -1,0 +1,18 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Open source</p>
+<h1>Open Source Cron Monitoring (AGPL)</h1>
+<p class="lead">CronCraft's source code is public under the <strong>GNU Affero General Public License v3</strong>. You can audit it, fork it, and run it yourself.</p>
+<p>Self-hosted deployments use <code>SELF_HOSTED=true</code> and skip Stripe-backed billing UI — see <a href="{{ url_for('marketing.self_hosted_cron_monitoring') }}">self-hosted cron monitoring</a> for Docker steps.</p>
+
+<h2>Hosted vs self-built</h2>
+<p>The service at croncraft.app funds maintenance and support for teams that do not want to operate Postgres backups and TLS. Same codebase either way.</p>
+
+<h2>Compare to other OSS tools</h2>
+<p>Healthchecks.io is the best-known BSD-licensed option with a huge community. We compare honestly in <a href="{{ url_for('marketing.croncraft_vs_healthchecks') }}">CronCraft vs Healthchecks.io</a>.</p>
+
+<div class="cta-inline">
+  <p>Star the repo or deploy your own.</p>
+  <a href="https://github.com/cculver78/CronCraft" class="btn-primary" target="_blank" rel="noopener noreferrer">GitHub</a>
+</div>
+{% endblock %}

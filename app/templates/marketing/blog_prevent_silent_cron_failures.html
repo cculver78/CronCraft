@@ -1,0 +1,24 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Blog</p>
+<h1>Prevent Silent Cron Job Failures</h1>
+<p class="lead">Your headline fear is real: <strong>the cron job is failing right now and nobody knows.</strong> Silent failures come from swallowed stderr, wrong users, missing env vars, and jobs that “succeed” at the shell level but fail the business outcome.</p>
+
+<h2>Symptoms</h2>
+<ul>
+  <li>Logs stopped rotating weeks ago but the schedule still fires.</li>
+  <li>Empty backups or zero-byte exports.</li>
+  <li>Metrics flatlined because the ETL never appended rows.</li>
+</ul>
+
+<h2>Defense in depth</h2>
+<p><strong>Assertions inside the script</strong> — exit non-zero when invariants break. <strong>Structured logging</strong> — one JSON line per run helps if you aggregate logs. <strong>External heartbeat</strong> — prove completion to a third party (CronCraft pings are described in <a href="{{ url_for('marketing.heartbeat_monitoring') }}">heartbeat monitoring</a>).</p>
+
+<h2>Why heartbeats help</h2>
+<p>Silence becomes actionable. If the ping never arrives, the monitor does not care whether the failure was disk, auth, or a bad deploy — you still investigate. Combine with <a href="{{ url_for('marketing.blog_how_to_monitor_cron_jobs') }}">how to monitor cron jobs</a> for the full picture.</p>
+
+<div class="cta-inline">
+  <p>Try CronCraft free — curl one line at the end of your script.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Sign up</a>
+</div>
+{% endblock %}

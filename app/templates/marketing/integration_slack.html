@@ -1,0 +1,23 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Integrations</p>
+<h1>Slack Alerts for Cron &amp; Scheduled Jobs</h1>
+<p class="lead">CronCraft sends late and failed job notifications to Slack via <strong>Incoming Webhooks</strong> on <strong>Pro and Team</strong> hosted plans.</p>
+<p>Email alerts are included on Free — upgrade when you want #incidents style visibility.</p>
+
+<h2>Setup (high level)</h2>
+<ol>
+  <li>Create a Slack incoming webhook in your workspace.</li>
+  <li>Paste the webhook URL into CronCraft integration settings.</li>
+  <li>Choose which jobs or teams should notify the channel.</li>
+</ol>
+<p>Exact UI labels live in the app after you <a href="{{ url_for('auth.register') }}">register</a>. Technical API details: <a href="https://github.com/cculver78/CronCraft" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+
+<h2>Related</h2>
+<p><a href="{{ url_for('marketing.cron_job_monitoring') }}">Cron monitoring</a> · <a href="{{ url_for('marketing.blog_how_to_monitor_cron_jobs') }}">Monitoring guide</a></p>
+
+<div class="cta-inline">
+  <p>Start on Free; enable Slack when you upgrade.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Get started</a>
+</div>
+{% endblock %}

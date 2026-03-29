@@ -1,0 +1,28 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Compare</p>
+<h1>Dead Man's Snitch Alternative</h1>
+<p class="lead">Dead Man's Snitch popularized friendly dead man's switch UX. CronCraft competes on <strong>more free jobs</strong> (10 vs a single free snitch on DMS at time of writing), <strong>dependency chains</strong> on Pro, and <strong>self-hosting</strong>.</p>
+<p>Table compare: <a href="{{ url_for('marketing.croncraft_vs_dead_mans_snitch') }}">CronCraft vs Dead Man's Snitch</a>.</p>
+
+<h2>Quick comparison</h2>
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead><tr><th>Feature</th><th>CronCraft</th><th>Dead Man's Snitch</th></tr></thead>
+    <tbody>
+      <tr><td>Free tier</td><td>10 jobs</td><td>1 snitch (check current site)</td></tr>
+      <tr><td>Self-host</td><td>Docker AGPL</td><td>No</td></tr>
+      <tr><td>Slack</td><td>Pro+</td><td>Paid plans</td></tr>
+      <tr><td>Branding / UX</td><td>Terminal-inspired dev UI</td><td>Strong product voice</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Where DMS wins</h2>
+<p>Brand recognition and a ruthlessly simple story for non-infra buyers.</p>
+
+<div class="cta-inline">
+  <p>Heartbeat URL model matches what you already curl.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Start free</a>
+</div>
+{% endblock %}

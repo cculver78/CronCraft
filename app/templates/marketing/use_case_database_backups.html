@@ -1,0 +1,28 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Use cases</p>
+<h1>Monitor Your Database Backup Cron Job</h1>
+<p class="lead">Backups are the canonical silent-failure job: cron still runs, disk fills, credentials rotate, and nobody notices until restore time. A <strong>success ping</strong> after a real backup proves the pipeline completed.</p>
+<p>General cron context: <a href="{{ url_for('marketing.cron_job_monitoring') }}">cron job monitoring</a> · <a href="{{ url_for('marketing.blog_prevent_silent_cron_failures') }}">silent failures</a></p>
+
+<h2>The problem</h2>
+<p><code>pg_dump</code> fails, S3 upload fails, or the job stops being scheduled — email-to-root is easy to ignore. CronCraft alerts when the ping does not arrive.</p>
+
+<h2>Copy-paste pattern (PostgreSQL)</h2>
+<div class="code-block"><pre style="margin:0;font-family:inherit;"><span class="t-comment">#!/bin/bash
+# backup.sh — nightly</span>
+set -euo pipefail
+pg_dump mydb | gzip &gt; <span class="t-ok">/backup/db-$(date +%F).sql.gz</span>
+aws s3 cp <span class="t-ok">/backup/db-$(date +%F).sql.gz</span> s3://my-bucket/backups/
+
+curl -fsS --retry 3 https://croncraft.app/ping/YOUR_TOKEN &gt; /dev/null
+</pre></div>
+
+<h2>If it fails</h2>
+<p>Either the script exits non-zero before curl (no ping → late alert) or you call <code>/ping/TOKEN/fail</code> from an error trap. See README for failure endpoint details.</p>
+
+<div class="cta-inline">
+  <p>Register a job whose schedule matches crontab.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Start monitoring</a>
+</div>
+{% endblock %}

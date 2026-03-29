@@ -1,0 +1,18 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Topics</p>
+<h1>Background Job Monitoring Without an Agent</h1>
+<p class="lead">Workers, queues, and nightly batches all share one question: <strong>did the work finish on time?</strong> CronCraft answers it with an HTTP ping from your code when the unit of work succeeds.</p>
+<p>Same mechanism as <a href="{{ url_for('marketing.cron_job_monitoring') }}">cron monitoring</a> — you are not limited to crontab. Anything that can call HTTPS can report.</p>
+
+<h2>Language-agnostic</h2>
+<p>Use <code>curl</code>, <code>requests</code>, <code>fetch</code>, or your HTTP client of choice. Example for Python: <a href="{{ url_for('marketing.use_case_python') }}">monitor Python scheduled tasks</a>.</p>
+
+<h2>Explicit failure</h2>
+<p>When your worker catches an exception, hit <code>/ping/TOKEN/fail</code> so CronCraft records a failed run instead of waiting for a timeout — documented in the <a href="https://github.com/cculver78/CronCraft" target="_blank" rel="noopener noreferrer">GitHub README</a>.</p>
+
+<div class="cta-inline">
+  <p>Pro adds Slack, webhooks, and dependency chains.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Try free</a>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Compare / Cronhub</p>
+<h1>Cronhub Is Shutting Down. Here's Your Best Alternative.</h1>
+<p class="lead"><strong>Cronhub.io is shutting down on June 30, 2026.</strong> If you relied on Cronhub for scheduler pings or monitors, you need a replacement that speaks the same language: a URL you hit when a job succeeds, and alerts when it doesn't.</p>
+<p>CronCraft is built for exactly that workflow. You can <a href="{{ url_for('auth.register') }}">start free</a> (no credit card), swap ping URLs in your scripts, and be done in minutes. Prefer to own the stack? <a href="{{ url_for('marketing.self_hosted_cron_monitoring') }}">Self-host with Docker</a> from GitHub.</p>
+<p>For step-by-step instructions, see our <a href="{{ url_for('marketing.cronhub_migration') }}">Cronhub migration guide</a>.</p>
+
+<h2>Cronhub feature → CronCraft</h2>
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead><tr><th>Cronhub concept</th><th>CronCraft equivalent</th></tr></thead>
+    <tbody>
+      <tr><td>Monitors / schedulers</td><td>Jobs you register with a cron schedule + grace period</td></tr>
+      <tr><td>Ping URL</td><td>Unique <code>https://croncraft.app/ping/&lt;token&gt;</code> per job</td></tr>
+      <tr><td>Dashboard</td><td>Real-time status, run history, late / failed states</td></tr>
+      <tr><td>Failure alerts</td><td>Email on all tiers; Slack &amp; webhooks on Pro+</td></tr>
+      <tr><td>Success vs failure ping</td><td><code>/ping/token</code> vs <code>/ping/token/fail</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Migrate in five steps</h2>
+<ol>
+  <li><a href="{{ url_for('auth.register') }}">Sign up</a> at croncraft.app (free, no card).</li>
+  <li>Create one CronCraft job for each Cronhub monitor — match schedule and grace.</li>
+  <li>Replace Cronhub ping URLs with CronCraft ping URLs in your scripts or schedulers.</li>
+  <li>Watch the dashboard to confirm pings land on time.</li>
+  <li>Cancel Cronhub before June 30, 2026.</li>
+</ol>
+
+<h2>Before / after (curl)</h2>
+<div class="code-block"><pre style="margin:0;font-family:inherit;"><span class="t-comment"># Before (Cronhub)</span>
+curl -fsS https://cronhub.io/ping/xxxx &gt; /dev/null
+
+<span class="t-comment"># After (CronCraft)</span>
+curl -fsS https://croncraft.app/ping/YOUR_TOKEN &gt; /dev/null
+</pre></div>
+
+<h2>Pricing snapshot</h2>
+<p>CronCraft's free tier includes <strong>10 monitored jobs</strong> with email alerts — enough for many Cronhub workloads. Paid plans are flat <strong>$19 / $49</strong> per month (Pro / Team), not per monitor. See <a href="{{ url_for('main.index') }}#pricing">pricing</a> on the homepage.</p>
+
+<div class="cta-inline">
+  <p>Start free — migrate in about five minutes.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Get started free</a>
+</div>
+
+<dl class="faq-block" id="faq">
+  <dt>Is CronCraft a drop-in replacement for Cronhub?</dt>
+  <dd>For heartbeat-style monitoring: yes. You trade one HTTPS ping URL for another. Scheduling still lives in cron, Kubernetes, or your platform — CronCraft records whether the ping arrived on time.</dd>
+  <dt>Can I self-host CronCraft?</dt>
+  <dd>Yes. AGPL-licensed source and Docker Compose are on <a href="https://github.com/cculver78/CronCraft" target="_blank" rel="noopener noreferrer">GitHub</a>. See <a href="{{ url_for('marketing.self_hosted_cron_monitoring') }}">self-hosted cron monitoring</a>.</dd>
+  <dt>What happens to my Cronhub history?</dt>
+  <dd>Historical data stays with Cronhub. CronCraft starts fresh from your first ping — export anything you need from Cronhub before they sunset the service.</dd>
+</dl>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Is CronCraft a drop-in replacement for Cronhub?", "acceptedAnswer": {"@type": "Answer", "text": "For heartbeat-style monitoring, yes. You replace one HTTPS ping URL with another."}},
+    {"@type": "Question", "name": "Can I self-host CronCraft?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. AGPL source and Docker Compose are on GitHub."}},
+    {"@type": "Question", "name": "What happens to my Cronhub history?", "acceptedAnswer": {"@type": "Answer", "text": "Historical data remains with Cronhub. CronCraft begins logging from your first ping."}}
+  ]
+}
+</script>
+{% endblock %}

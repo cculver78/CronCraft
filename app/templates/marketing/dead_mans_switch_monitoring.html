@@ -1,0 +1,18 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Topics</p>
+<h1>Dead Man's Switch Monitoring for Scripts &amp; Pipelines</h1>
+<p class="lead">A dead man's switch fires when something <em>stops happening</em> — perfect for jobs that should run every night but never send email when cron dies quietly.</p>
+<p>CronCraft implements this with <strong>expected schedules + grace</strong> and optional <code>/fail</code> pings when your script knows it broke. Deeper dive: <a href="{{ url_for('marketing.blog_dead_mans_switch_pattern') }}">dead man's switch pattern explained</a>.</p>
+
+<h2>Silent failure is the default</h2>
+<p>Most teams discover a dead cron weeks later. Pair operational checks with <a href="{{ url_for('marketing.blog_prevent_silent_cron_failures') }}">preventing silent cron failures</a>.</p>
+
+<h2>vs uptime monitors</h2>
+<p>Uptime checks watch URLs. CronCraft watches <strong>your batch proving it ran</strong> — closer to <a href="{{ url_for('marketing.heartbeat_monitoring') }}">heartbeat monitoring</a> than to synthetic HTTP probes.</p>
+
+<div class="cta-inline">
+  <p>Migrating from Cronhub? <a href="{{ url_for('marketing.cronhub_alternative') }}" style="color:inherit;font-weight:700;">Cronhub alternative</a></p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Get started</a>
+</div>
+{% endblock %}

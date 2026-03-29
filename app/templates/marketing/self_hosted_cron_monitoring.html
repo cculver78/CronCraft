@@ -1,0 +1,38 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Self-hosted</p>
+<h1>Self-Hosted Cron Job Monitoring with Docker</h1>
+<p class="lead">CronCraft is <strong>open source (AGPL)</strong>. Run the full product on your own hardware, keep data on your network, and skip SaaS billing entirely for internal use.</p>
+<p>The hosted service at <strong>croncraft.app</strong> exists for teams who want zero ops. Self-hosters get the same UI and ping protocol — you only change the base URL in your curl lines to your domain.</p>
+
+<h2>Why self-host?</h2>
+<ul>
+  <li><strong>Data residency</strong> — pings and job metadata never leave your infra.</li>
+  <li><strong>Homelab &amp; air-gapped</strong> — common ask in <em>r/selfhosted</em> and similar communities.</li>
+  <li><strong>No per-monitor pricing</strong> — AGPL self-hosted builds are not metered by us.</li>
+</ul>
+<p>Trade-off: you operate backups, TLS, and upgrades. If that sounds heavy, compare with <a href="{{ url_for('marketing.free_cron_monitoring') }}">the free hosted tier</a>.</p>
+
+<h2>Quick start</h2>
+<div class="code-block"><pre style="margin:0;font-family:inherit;">git clone https://github.com/cculver78/CronCraft.git
+cd CronCraft
+cp .env.example .env
+<span class="t-comment"># Set SECRET_KEY and SELF_HOSTED=true</span>
+docker compose up -d
+</pre></div>
+<p>First registered user becomes admin. Full instructions live in the <a href="https://github.com/cculver78/CronCraft" target="_blank" rel="noopener noreferrer">README</a>.</p>
+
+<h2>Ping URL on your domain</h2>
+<p>Self-hosted installs use your own host:</p>
+<div class="code-block"><pre style="margin:0;font-family:inherit;">curl -fsS https://monitoring.internal/ping/YOUR_TOKEN &gt; /dev/null
+</pre></div>
+
+<h2>Open source positioning</h2>
+<p>See <a href="{{ url_for('marketing.open_source_cron_monitoring') }}">open source cron monitoring</a> for license notes and how that differs from the hosted product.</p>
+
+<div class="cta-inline">
+  <p>Prefer managed? Hosted free tier — 10 jobs, email alerts.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Try croncraft.app</a>
+  <a href="https://github.com/cculver78/CronCraft" class="btn-ghost" target="_blank" rel="noopener noreferrer">Clone on GitHub</a>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Blog</p>
+<h1>Cron Job Not Running? Troubleshooting Checklist</h1>
+<p class="lead">Before you blame the script, verify the scheduler actually invoked it. Most “cron stopped” tickets are PATH, permissions, or environment differences between login shells and cron’s minimal environment.</p>
+
+<h2>Quick checks</h2>
+<ul>
+  <li><strong>User</strong> — Is the crontab installed for the user that owns the files?</li>
+  <li><strong>PATH</strong> — Use absolute paths to interpreters and binaries.</li>
+  <li><strong>Timezone</strong> — CronCraft supports per-job timezones; crontab uses server local time unless you set TZ.</li>
+  <li><strong>Locks</strong> — Stale PID files can make jobs no-op forever.</li>
+</ul>
+
+<h2>When the job runs but does nothing useful</h2>
+<p>Heartbeats catch “I did not finish successfully” even when cron launches the process. If you never see pings in CronCraft, either the schedule is wrong or the script exits before curl. See <a href="{{ url_for('marketing.blog_how_to_monitor_cron_jobs') }}">how to monitor cron jobs</a>.</p>
+
+<div class="cta-inline">
+  <p>Add monitoring while you debug.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Create a job</a>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Blog</p>
+<h1>Cron Job Dependency Management</h1>
+<p class="lead">Cron itself has no DAG. People fake dependencies with time gaps (“job B starts two hours after job A”), file drops, or orchestrators. When the chain breaks, downstream jobs still run — and produce garbage.</p>
+
+<h2>Anti-pattern: time-only sequencing</h2>
+<p>If job A slows down, job B still starts on clock time. You have coupled schedules without coupling outcomes.</p>
+
+<h2>Better: explicit upstream success</h2>
+<p>CronCraft Pro+ models dependencies: downstream jobs understand when upstream misses a ping. That turns “hope the order worked” into something the monitor enforces. Product page: <a href="{{ url_for('marketing.cron_job_monitoring') }}">cron job monitoring</a>.</p>
+
+<h2>When to use a real orchestrator</h2>
+<p>Airflow, Temporal, or a queue system fit dynamic workflows. For a handful of static crons, dependency-aware monitoring is often enough without new infrastructure.</p>
+
+<div class="cta-inline">
+  <p>Pro tier unlocks chains on hosted CronCraft.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Sign up</a>
+</div>
+{% endblock %}

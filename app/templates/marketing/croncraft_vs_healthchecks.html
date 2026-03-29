@@ -1,0 +1,34 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Compare</p>
+<h1>CronCraft vs Healthchecks.io</h1>
+<p class="lead">Both products use <strong>success pings</strong> and schedules. Healthchecks.io has years of community trust and a massive integration list. CronCraft is newer, AGPL-licensed, and emphasizes <strong>dependency chains</strong> plus <strong>flat hosted pricing</strong>.</p>
+
+<h2>Side-by-side</h2>
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead><tr><th></th><th>CronCraft</th><th>Healthchecks.io</th></tr></thead>
+    <tbody>
+      <tr><td>Ping model</td><td>HTTPS GET success/fail</td><td>Same general pattern</td></tr>
+      <tr><td>Open source</td><td>AGPL, GitHub</td><td>BSD, mature self-host docs</td></tr>
+      <tr><td>Hosted free tier</td><td>10 jobs</td><td>20 checks (verify current)</td></tr>
+      <tr><td>Pricing simplicity</td><td>$0 / $19 / $49</td><td>Multiple tiers</td></tr>
+      <tr><td>Integrations</td><td>Email; Slack/webhook Pro+</td><td>Very large matrix</td></tr>
+      <tr><td>Dependency chains</td><td>Built-in Pro+</td><td>Not core</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Choose Healthchecks.io when</h2>
+<p>You need the widest notification coverage and longest track record out of the box.</p>
+
+<h2>Choose CronCraft when</h2>
+<p>You want job DAG-style dependencies, like the terminal-forward UI, or prefer our hosted price structure / AGPL stack.</p>
+
+<p>Also read: <a href="{{ url_for('marketing.healthchecks_alternative') }}">Healthchecks.io alternative</a> narrative and <a href="{{ url_for('marketing.self_hosted_cron_monitoring') }}">self-hosted CronCraft</a>.</p>
+
+<div class="cta-inline">
+  <p>No card for hosted free tier.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Try CronCraft</a>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Compare / Migration</p>
+<h1>Migrate from Cronhub to CronCraft</h1>
+<p class="lead">Cronhub is <strong>shutting down June 30, 2026</strong>. This guide is for teams who already have curl pings wired into scripts and want the smallest possible change set.</p>
+<p>Read the <a href="{{ url_for('marketing.cronhub_alternative') }}">Cronhub alternative overview</a> first if you want positioning and feature mapping. For <a href="{{ url_for('marketing.self_hosted_cron_monitoring') }}">Docker self-hosting</a>, the ping path is the same idea — only the base URL changes.</p>
+
+<h2>1. Export your monitor list from Cronhub</h2>
+<p>Grab names, schedules, and grace expectations while Cronhub's UI is still available. You will recreate each logical monitor as a <strong>job</strong> in CronCraft.</p>
+
+<h2>2. Create matching jobs in CronCraft</h2>
+<p>For each Cronhub monitor:</p>
+<ul>
+  <li>Register a job with the same cadence (cron expression).</li>
+  <li>Set a <strong>grace period</strong> that matches how late a run is allowed before you want an alert — this is how CronCraft avoids false positives on slow runs.</li>
+  <li>Copy the new ping URL from the job detail page.</li>
+</ul>
+
+<h2>3. Replace ping URLs in your codebase</h2>
+<p>Search your repo and server configs for <code>cronhub.io</code> (or your old domain). Swap the host and path segment for CronCraft's token URL:</p>
+<div class="code-block"><pre style="margin:0;font-family:inherit;">curl -fsS --retry 3 https://croncraft.app/ping/YOUR_TOKEN &gt; /dev/null
+</pre></div>
+<p>If you used success/fail endpoints on Cronhub, use <code>/ping/TOKEN</code> for success and <code>/ping/TOKEN/fail</code> for explicit failure — same pattern as <a href="https://github.com/cculver78/CronCraft#integrating-a-job" target="_blank" rel="noopener noreferrer">CronCraft docs</a>.</p>
+
+<h2>4. Run a test window</h2>
+<p>Leave both systems active briefly if you can: fire a manual run, confirm the CronCraft dashboard shows the ping, then remove the old Cronhub call once you trust the new path.</p>
+
+<h2>5. Alert channels</h2>
+<p>Free tier includes email. If you used Slack or webhooks on Cronhub, connect those under Pro in CronCraft settings after upgrade — see <a href="{{ url_for('marketing.integration_slack') }}">Slack integration</a>.</p>
+
+<div class="cta-inline">
+  <p>Free tier, no credit card — create jobs and paste new URLs today.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Start migrating</a>
+</div>
+
+<h2>Related</h2>
+<ul>
+  <li><a href="{{ url_for('marketing.cron_job_monitoring') }}">Cron job monitoring</a> — keyword overview</li>
+  <li><a href="{{ url_for('marketing.use_case_bash') }}">Bash + cron examples</a></li>
+  <li><a href="{{ url_for('marketing.blog_how_to_monitor_cron_jobs') }}">How to monitor cron jobs</a> (longer read)</li>
+</ul>
+{% endblock %}

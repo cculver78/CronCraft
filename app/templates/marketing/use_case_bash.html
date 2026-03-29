@@ -1,0 +1,21 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Use cases</p>
+<h1>Monitor Bash Cron Scripts (One-Liner)</h1>
+<p class="lead">Most CronCraft users glue pings into bash. The pattern is: run commands, then <code>curl</code> on success only.</p>
+
+<h2>Crontab one-liner</h2>
+<div class="code-block"><pre style="margin:0;font-family:inherit;">0 2 * * * /usr/local/bin/backup.sh &amp;&amp; curl -fsS --retry 3 https://croncraft.app/ping/YOUR_TOKEN &gt; /dev/null
+</pre></div>
+
+<h2>Exit-code aware</h2>
+<div class="code-block"><pre style="margin:0;font-family:inherit;">0 2 * * * /usr/local/bin/backup.sh &amp;&amp; curl -fsS --retry 3 https://croncraft.app/ping/YOUR_TOKEN &gt; /dev/null || curl -fsS --retry 3 https://croncraft.app/ping/YOUR_TOKEN/fail &gt; /dev/null
+</pre></div>
+
+<p>More context: <a href="{{ url_for('marketing.blog_how_to_monitor_cron_jobs') }}">how to monitor cron jobs</a> · <a href="{{ url_for('marketing.use_case_database_backups') }}">database backups</a></p>
+
+<div class="cta-inline">
+  <p>Free tier — paste URL and go.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Start</a>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Compare</p>
+<h1>Looking for a Cronitor Alternative?</h1>
+<p class="lead">Cronitor is a broad platform: cron checks, uptime, status pages, and more. CronCraft is narrower — <strong>heartbeat cron monitoring</strong>, dependency chains, and alerts — with simpler flat pricing.</p>
+<p>Full comparison: <a href="{{ url_for('marketing.croncraft_vs_cronitor') }}">CronCraft vs Cronitor</a>. Kubernetes users often evaluate both; see <a href="{{ url_for('marketing.use_case_kubernetes') }}">Kubernetes CronJob monitoring</a>.</p>
+
+<h2>Why teams consider switching</h2>
+<ul>
+  <li>Pricing that scales on monitors and seats feels expensive for “just” cron pings.</li>
+  <li>Desire for self-hosted AGPL instead of SaaS-only.</li>
+  <li>Want dead-simple curl integration without platform lock-in.</li>
+</ul>
+
+<h2>Quick comparison</h2>
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead><tr><th>Feature</th><th>CronCraft</th><th>Cronitor (typical)</th></tr></thead>
+    <tbody>
+      <tr><td>Scope</td><td>Cron / heartbeat focus</td><td>Cron + uptime + status + more</td></tr>
+      <tr><td>Self-host</td><td>Yes (Docker)</td><td>No</td></tr>
+      <tr><td>Hosted pricing</td><td>$0 / $19 / $49 flat</td><td>Per-monitor + user model</td></tr>
+      <tr><td>Dependency chains</td><td>Yes (Pro+)</td><td>Pipeline-style visibility</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Where Cronitor wins</h2>
+<p>All-in-one monitoring story and enterprise feature depth beyond cron heartbeats.</p>
+
+<div class="cta-inline">
+  <p>Start with 10 free jobs.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Try CronCraft</a>
+</div>
+{% endblock %}

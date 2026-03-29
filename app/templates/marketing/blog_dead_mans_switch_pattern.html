@@ -1,0 +1,25 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Blog</p>
+<h1>Dead Man's Switch Pattern Explained</h1>
+<p class="lead">Originally a physical safety mechanism, in software a dead man's switch means: <strong>if I stop sending proof-of-life, assume something went wrong and act.</strong> For batch jobs, the “proof” is usually an HTTP ping at the end of a successful run.</p>
+
+<h2>Why it fits cron</h2>
+<p>Cron is pull-based and opaque. The switch inverts the model: your job pushes success outward. Missed pushes imply failure-by-silence, which is easier to reason about than parsing absence of log lines.</p>
+
+<h2>Implementation sketch</h2>
+<ol>
+  <li>Define how often success should occur.</li>
+  <li>On success only, call a monitored URL.</li>
+  <li>Service alerts if the URL is not hit inside the window + grace.</li>
+</ol>
+<p>Product angle: <a href="{{ url_for('marketing.dead_mans_switch_monitoring') }}">dead man's switch monitoring</a> with CronCraft.</p>
+
+<h2>Not the same as uptime checks</h2>
+<p>Pinging a public website tells you the site responds. Pinging CronCraft tells you <em>your batch finished</em> — different signal, same transport.</p>
+
+<div class="cta-inline">
+  <p>Free tier heartbeat monitoring.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Try CronCraft</a>
+</div>
+{% endblock %}

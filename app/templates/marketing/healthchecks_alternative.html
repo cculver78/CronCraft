@@ -1,0 +1,39 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Compare</p>
+<h1>Looking for a Healthchecks.io Alternative?</h1>
+<p class="lead">Healthchecks.io earned its reputation: open source, simple, and widely trusted. Teams look elsewhere when they want <strong>different pricing</strong>, <strong>explicit dependency chains</strong>, or a <strong>greenfield UI</strong> — CronCraft targets those gaps.</p>
+<p>Honest side-by-side: <a href="{{ url_for('marketing.croncraft_vs_healthchecks') }}">CronCraft vs Healthchecks.io</a>.</p>
+
+<h2>Why people switch (anecdotally)</h2>
+<ul>
+  <li>Want flat SaaS pricing ($19 / $49) instead of navigating multiple hosted tiers.</li>
+  <li>Need downstream job logic when job A must succeed before job B (Pro).</li>
+  <li>Prefer AGPL self-host under one vendor-neutral codebase tied to croncraft.app.</li>
+</ul>
+
+<h2>Quick comparison</h2>
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead><tr><th>Feature</th><th>CronCraft</th><th>Healthchecks.io (typical)</th></tr></thead>
+    <tbody>
+      <tr><td>Free tier</td><td>10 jobs, email</td><td>20 checks on hosted product</td></tr>
+      <tr><td>Self-host</td><td>Docker / AGPL</td><td>Open source (BSD), well documented</td></tr>
+      <tr><td>Dependency chains</td><td>Yes (Pro+)</td><td>Not a first-class feature</td></tr>
+      <tr><td>Integration breadth</td><td>Email; Slack/webhook Pro+</td><td>Very large notification integration list</td></tr>
+      <tr><td>Community tenure</td><td>Newer</td><td>Many years, huge goodwill</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Where Healthchecks.io still wins</h2>
+<p>Notification matrix depth and battle-tested community trust. If you need fifteen obscure channels day one, stay or self-host HC and wire integrations.</p>
+
+<h2>Where CronCraft wins</h2>
+<p>Dependency chains, transparent hosted pricing, and a single product focus — heartbeat cron monitoring without becoming a full observability suite.</p>
+
+<div class="cta-inline">
+  <p>Free hosted tier or Docker.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Try CronCraft</a>
+</div>
+{% endblock %}

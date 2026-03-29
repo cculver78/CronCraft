@@ -1,0 +1,20 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Use cases</p>
+<h1>Monitor Heroku Scheduler Jobs</h1>
+<p class="lead">Heroku Scheduler fires a one-off dyno. When it exits, you want proof the work succeeded — not just that Heroku started a process.</p>
+<p>Same heartbeat model as <a href="{{ url_for('marketing.scheduled_task_monitoring') }}">scheduled task monitoring</a>.</p>
+
+<h2>Pattern</h2>
+<p>At the end of your scheduled command (bash or Node runner), curl CronCraft:</p>
+<div class="code-block"><pre style="margin:0;font-family:inherit;">./bin/nightly_task.sh &amp;&amp; curl -fsS https://croncraft.app/ping/YOUR_TOKEN &gt; /dev/null
+</pre></div>
+
+<h2>Scheduler UI</h2>
+<p>Match the CronCraft job schedule to the Heroku frequency you picked (daily/hourly/10m) so expected windows line up.</p>
+
+<div class="cta-inline">
+  <p>Free tier covers many single-dyno schedules.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Add a job</a>
+</div>
+{% endblock %}

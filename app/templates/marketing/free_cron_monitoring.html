@@ -1,0 +1,20 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Pricing</p>
+<h1>Free Cron Job Monitoring (Actually Useful)</h1>
+<p class="lead">CronCraft's free tier includes <strong>10 monitored jobs</strong>, <strong>email alerts</strong>, and <strong>7 days</strong> of run history — no credit card, no time-limited trial gimmick.</p>
+<p>Need Slack, webhooks, longer history, or dependency chains? That is Pro / Team on the hosted service. <a href="{{ url_for('marketing.open_source_cron_monitoring') }}">Self-hosting</a> unlocks features without SaaS billing (you run the stack).</p>
+
+<h2>Who it fits</h2>
+<ul>
+  <li>Side projects and homelab jobs.</li>
+  <li>Small teams validating heartbeat monitoring before standardizing.</li>
+  <li><a href="{{ url_for('marketing.cronhub_alternative') }}">Cronhub refugees</a> with a handful of monitors.</li>
+</ul>
+
+<div class="cta-inline">
+  <p>See full plan grid on the homepage.</p>
+  <a href="{{ url_for('main.index') }}#pricing" class="btn-primary">View pricing</a>
+  <a href="{{ url_for('auth.register') }}" class="btn-ghost">Register</a>
+</div>
+{% endblock %}

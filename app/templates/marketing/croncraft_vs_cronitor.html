@@ -1,0 +1,28 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Compare</p>
+<h1>CronCraft vs Cronitor</h1>
+<p class="lead">Cronitor bundles cron monitoring with uptime, status pages, and more. CronCraft stays focused on <strong>scheduled job heartbeats</strong>, run history, and alerting — with optional <strong>dependency chains</strong> for pipelines.</p>
+
+<h2>Trade-offs</h2>
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead><tr><th></th><th>CronCraft</th><th>Cronitor</th></tr></thead>
+    <tbody>
+      <tr><td>Product breadth</td><td>Narrow (cron / pings)</td><td>Broad platform</td></tr>
+      <tr><td>Self-host</td><td>Yes</td><td>No</td></tr>
+      <tr><td>Pricing</td><td>Flat tiers</td><td>Usage + seats (verify)</td></tr>
+      <tr><td>K8s / cron</td><td>User-driven pings</td><td>Strong marketing in platform space</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>If you only need “tell me when this cron stops pinging,” CronCraft keeps surface area small. If you want one vendor for uptime + status + cron, Cronitor may still win — we are not trying to replicate the entire suite.</p>
+
+<p>More: <a href="{{ url_for('marketing.cronitor_alternative') }}">Cronitor alternative</a> · <a href="{{ url_for('marketing.use_case_kubernetes') }}">Kubernetes</a></p>
+
+<div class="cta-inline">
+  <p>Evaluate with real jobs on the free tier.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Sign up</a>
+</div>
+{% endblock %}

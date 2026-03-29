@@ -1,5 +1,13 @@
 # Changelog
 
+## 20260329.00
+
+### Marketing & SEO
+
+- Added ~29 public marketing routes (keyword pages, compare, use cases, integrations, blog) with shared `marketing/layout.html`, canonical + Open Graph tags, and JSON-LD FAQ on the Cronhub alternative page
+- Expanded site footer with internal links; homepage Cronhub banner and Resources section; updated `sitemap.xml` with all new URLs
+- Registered `marketing` blueprint in the Flask app
+
 ## 20260320.00
 
 ### Tweaks and Optimizations

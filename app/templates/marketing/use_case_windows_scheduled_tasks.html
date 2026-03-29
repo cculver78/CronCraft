@@ -1,0 +1,26 @@
+{% extends "marketing/layout.html" %}
+{% block marketing_content %}
+<p class="breadcrumb"><a href="{{ url_for('main.index') }}">Home</a> / Use cases</p>
+<h1>Monitor Windows Scheduled Tasks</h1>
+<p class="lead">Task Scheduler can run PowerShell or batch jobs. Add a CronCraft ping when the script completes successfully — same contract as Linux cron.</p>
+<p>Overview: <a href="{{ url_for('marketing.scheduled_task_monitoring') }}">scheduled task monitoring</a>.</p>
+
+<h2>PowerShell</h2>
+<div class="code-block"><pre style="margin:0;font-family:inherit;">try {
+    &amp; C:\Scripts\Nightly-Job.ps1
+    Invoke-WebRequest -Uri "https://croncraft.app/ping/YOUR_TOKEN" -UseBasicParsing -TimeoutSec 60 | Out-Null
+} catch {
+    Invoke-WebRequest -Uri "https://croncraft.app/ping/YOUR_TOKEN/fail" -UseBasicParsing -TimeoutSec 60 | Out-Null
+    throw
+}
+</pre></div>
+
+<h2>curl.exe (Windows 10+)</h2>
+<div class="code-block"><pre style="margin:0;font-family:inherit;">C:\Scripts\job.bat &amp;&amp; curl.exe -fsS https://croncraft.app/ping/YOUR_TOKEN &gt; nul
+</pre></div>
+
+<div class="cta-inline">
+  <p>Set job schedule to match CronCraft expectations.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn-primary">Add job</a>
+</div>
+{% endblock %}
