@@ -4,6 +4,7 @@
 
 ### Marketing & SEO
 
+- Fixed footer alignment issue by overriding flex layout on the wide footer container so elements stack correctly
 - Marketing pages: restore black text on green `.btn-primary` and muted text on `.btn-ghost` (prose link styles no longer override buttons)
 
 - Footer link grid: use explicit 4-column (2×4) layout on desktop so columns align horizontally; narrow breakpoints use 2 then 1 column
