@@ -238,6 +238,7 @@ CronCraft ships with Docker support for self-hosted deployments. Two profiles ar
 ### 12. Anomaly Detection *(Pro/Team Only)*
 Detects unusual job behavior by computing rolling statistics over the last 30 runs and flagging anything beyond **2.5 standard deviations**. Alerts fire even if the job technically succeeded — a backup that normally takes 4 minutes but suddenly takes 40 will trigger an anomaly alert.
 
+- **Toggle Setup**: Anomaly notifications are optional and must be toggled per-job using the `notify_duration_anomaly` flag.
 - **Plan Gating**: Controlled by the `allow_anomaly_detection` flag in `plan_limits.py`. Free-tier users get nothing. Self-hosted mode has full access.
 - **Dual-Metric Detection**:
   - **Response Latency (automatic)**: Computed as `pinged_at − expected_at` on every successful ping. Works out of the box with **zero user changes** — CronCraft already stores both timestamps on every `JobRun`.
@@ -245,7 +246,6 @@ Detects unusual job behavior by computing rolling statistics over the last 30 ru
 - **Metric Priority**: If the current ping includes `duration_ms` AND at least 5 historical runs have it, duration is used. Otherwise, response latency is the fallback.
 - **Minimum Sample**: Anomaly checks require **≥ 5** data points. Fewer runs produce unreliable standard deviations.
 - **Alert Cooldown**: Maximum one anomaly alert per job per **24 hours** to prevent spam on persistently slow jobs.
-- **No Per-Job Toggle**: Anomaly detection activates automatically for Pro/Team users. No configuration needed.
 - **Alert Channels**: Anomaly alerts dispatch via all configured channels (email, webhook, Slack), following the same plan-gated rules as other alert types. Webhook payloads include an `anomaly` object with `metric`, `current`, `mean`, `stdev`, and `z_score`.
 - **Stats Computation**: Stats are aggregated from the existing `job_runs` table (no separate stats table). Python's `statistics.mean()` and `statistics.stdev()` are used for cross-database compatibility (SQLite lacks `STDDEV()`).
 
@@ -372,6 +372,7 @@ Detects unusual job behavior by computing rolling statistics over the last 30 ru
         "webhook_url": null,
         "notify_slack": true,
         "slack_webhook": "https://hooks.slack.com/services/T00/B00/xxxx",
+        "notify_duration_anomaly": false,
         "depends_on": null,
         "team_id": null,
         "created_at": "2026-03-10T14:22:31"
@@ -445,6 +446,7 @@ Detects unusual job behavior by computing rolling statistics over the last 30 ru
   | `webhook_url` | string | — | `null` | Required if `notify_webhook` is true |
   | `notify_slack` | boolean | — | `false` | Send Slack alerts *(Pro+ only)* |
   | `slack_webhook` | string | — | `null` | Slack Incoming Webhook URL *(Pro+ only)* |
+  | `notify_duration_anomaly` | boolean | — | `false` | Enable duration anomaly alerts *(Pro+ only)* |
   | `depends_on` | integer | — | `null` | Parent job ID for dependency chain *(Pro+ only)* |
 
   **Minimal example:**
@@ -475,6 +477,7 @@ Detects unusual job behavior by computing rolling statistics over the last 30 ru
       "webhook_url": "https://hooks.example.com/croncraft",
       "notify_slack": true,
       "slack_webhook": "https://hooks.slack.com/services/T00/B00/xxxx",
+      "notify_duration_anomaly": true,
       "depends_on": 12
     }' \
     "$BASE/jobs" | python3 -m json.tool
@@ -501,6 +504,7 @@ Detects unusual job behavior by computing rolling statistics over the last 30 ru
       "webhook_url": "https://hooks.example.com/croncraft",
       "notify_slack": true,
       "slack_webhook": "https://hooks.slack.com/services/T00/B00/xxxx",
+      "notify_duration_anomaly": true,
       "depends_on": 12,
       "team_id": null,
       "created_at": "2026-03-19T21:35:00"
@@ -662,6 +666,7 @@ Detects unusual job behavior by computing rolling statistics over the last 30 ru
       "webhook_url": null,
       "notify_slack": false,
       "slack_webhook": null,
+      "notify_duration_anomaly": false,
       "depends_on": null,
       "team_id": null,
       "created_at": "2026-03-10T14:22:31"
@@ -725,6 +730,7 @@ Detects unusual job behavior by computing rolling statistics over the last 30 ru
       "webhook_url": null,
       "notify_slack": false,
       "slack_webhook": null,
+      "notify_duration_anomaly": false,
       "depends_on": null,
       "team_id": null,
       "created_at": "2026-03-10T14:22:31"
@@ -773,6 +779,7 @@ Detects unusual job behavior by computing rolling statistics over the last 30 ru
       "webhook_url": null,
       "notify_slack": false,
       "slack_webhook": null,
+      "notify_duration_anomaly": false,
       "depends_on": null,
       "team_id": null,
       "created_at": "2026-03-10T14:22:31"

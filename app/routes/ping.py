@@ -115,7 +115,10 @@ def receive_ping_fail(token):
 
 
 def _check_anomaly(job, duration_ms, pinged_at, expected_at):
-    """Run anomaly detection if the user's plan supports it."""
+    """Run anomaly detection if the user's plan supports it and the job has it enabled."""
+    if not job.notify_duration_anomaly:
+        return
+
     from app.plan_limits import is_feature_allowed
     user_plan = job.user.plan if getattr(job, 'user', None) else 'free'
     if not is_feature_allowed(user_plan, 'allow_anomaly_detection'):

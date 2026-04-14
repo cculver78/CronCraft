@@ -1,5 +1,11 @@
 # Changelog
 
+## 20260414.00
+
+### Features
+
+- Made Duration Anomaly notifications optional, added `notify_duration_anomaly` toggle per-job (defaults to disabled).
+
 ## 20260329.02
 
 ### Marketing & SEO

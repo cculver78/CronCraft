@@ -98,6 +98,14 @@
                     {% else %}
                     <span class="t-muted" style="font-size: 11px;">🔒 Slack <em>(Pro)</em></span>
                     {% endif %}
+                    {% if plan_limits.allow_anomaly_detection %}
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                        <input type="checkbox" name="notify_duration_anomaly" id="notify_duration_anomaly_cb" {% if job.notify_duration_anomaly %}checked{% endif %} style="accent-color: var(--green); width: 14px; height: 14px; cursor: pointer;">
+                        Duration Anomaly
+                    </label>
+                    {% else %}
+                    <span class="t-muted" style="font-size: 11px;">🔒 Duration Anomaly <em>(Pro)</em></span>
+                    {% endif %}
                 </div>
             </div>
 

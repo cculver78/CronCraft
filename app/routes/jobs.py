@@ -95,6 +95,7 @@ def create():
         webhook_url = request.form.get('webhook_url', '').strip()
         notify_slack = request.form.get('notify_slack') == 'on'
         slack_webhook = request.form.get('slack_webhook', '').strip()
+        notify_duration_anomaly = request.form.get('notify_duration_anomaly') == 'on'
         depends_on = request.form.get('depends_on', type=int)
 
         # Enforce plan-level feature restrictions
@@ -166,6 +167,7 @@ def create():
             webhook_url=webhook_url if notify_webhook else None,
             notify_slack=notify_slack,
             slack_webhook=slack_webhook if notify_slack else None,
+            notify_duration_anomaly=notify_duration_anomaly,
             depends_on=depends_on or None,
             ping_token=token,
             expected_at=calculate_next_expected(schedule, job_timezone)
@@ -180,6 +182,7 @@ def create():
         'allow_webhook': is_feature_allowed(current_user.plan, 'allow_webhook'),
         'allow_slack': is_feature_allowed(current_user.plan, 'allow_slack'),
         'allow_dependencies': is_feature_allowed(current_user.plan, 'allow_dependencies'),
+        'allow_anomaly_detection': is_feature_allowed(current_user.plan, 'allow_anomaly_detection'),
     }
     return render_template('jobs/create.html', user_teams=user_teams, available_jobs=available_jobs, default_team_id=team_id_param, plan_limits=plan_limits)
 
@@ -210,6 +213,7 @@ def edit(id):
         webhook_url = request.form.get('webhook_url', '').strip()
         notify_slack = request.form.get('notify_slack') == 'on'
         slack_webhook = request.form.get('slack_webhook', '').strip()
+        notify_duration_anomaly = request.form.get('notify_duration_anomaly') == 'on'
         depends_on = request.form.get('depends_on', type=int)
 
         # Enforce plan-level feature restrictions
@@ -275,6 +279,7 @@ def edit(id):
         job.webhook_url = webhook_url if notify_webhook else None
         job.notify_slack = notify_slack
         job.slack_webhook = slack_webhook if notify_slack else None
+        job.notify_duration_anomaly = notify_duration_anomaly
         job.depends_on = depends_on or None
         job.expected_at = calculate_next_expected(schedule, job_timezone)
         db.session.commit()
@@ -285,6 +290,7 @@ def edit(id):
         'allow_webhook': is_feature_allowed(current_user.plan, 'allow_webhook'),
         'allow_slack': is_feature_allowed(current_user.plan, 'allow_slack'),
         'allow_dependencies': is_feature_allowed(current_user.plan, 'allow_dependencies'),
+        'allow_anomaly_detection': is_feature_allowed(current_user.plan, 'allow_anomaly_detection'),
     }
     return render_template('jobs/edit.html', job=job, user_teams=user_teams, available_jobs=available_jobs, plan_limits=plan_limits)
 

@@ -23,6 +23,7 @@ class Job(db.Model):
     slack_webhook = db.Column(db.String(500))
     notify_webhook = db.Column(db.Boolean, default=False)
     webhook_url = db.Column(db.String(500))
+    notify_duration_anomaly = db.Column(db.Boolean, default=False)
     depends_on = db.Column(db.BigInteger, db.ForeignKey('jobs.id'), nullable=True)
     last_ping_at = db.Column(db.DateTime, nullable=True)
     last_status = db.Column(db.Enum('ok', 'late', 'failed', 'never_run'), default='never_run')

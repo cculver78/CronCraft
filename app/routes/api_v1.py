@@ -51,6 +51,7 @@ def _job_to_dict(job):
         'webhook_url': job.webhook_url,
         'notify_slack': job.notify_slack,
         'slack_webhook': job.slack_webhook,
+        'notify_duration_anomaly': job.notify_duration_anomaly,
         'depends_on': job.depends_on,
         'team_id': job.team_id,
         'created_at': job.created_at.isoformat() if job.created_at else None,
@@ -140,6 +141,7 @@ def create_job():
     webhook_url = (data.get('webhook_url') or '').strip()
     notify_slack = data.get('notify_slack', False)
     slack_webhook = (data.get('slack_webhook') or '').strip()
+    notify_duration_anomaly = data.get('notify_duration_anomaly', False)
     depends_on = data.get('depends_on')
 
     # --- Plan-level feature enforcement ---
@@ -212,6 +214,7 @@ def create_job():
         webhook_url=webhook_url if notify_webhook else None,
         notify_slack=notify_slack,
         slack_webhook=slack_webhook if notify_slack else None,
+        notify_duration_anomaly=notify_duration_anomaly,
         depends_on=depends_on or None,
         ping_token=token,
         expected_at=calculate_next_expected(schedule, job_timezone),
@@ -391,6 +394,9 @@ def update_job(id):
                     return _error(url_err)
         job.notify_slack = ns
         job.slack_webhook = sw if ns else None
+
+    if 'notify_duration_anomaly' in data:
+        job.notify_duration_anomaly = bool(data['notify_duration_anomaly'])
 
     # Dependency
     if 'depends_on' in data:
