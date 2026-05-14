@@ -61,7 +61,9 @@
                         </td>
                         <td style="padding: 10px 16px; text-align: center; color: var(--text-muted);">{{ job_counts.get(user.id, 0) }}</td>
                         <td style="padding: 10px 16px; text-align: center;">
-                            {% if user.email_verified %}
+                            {% if user.is_locked %}
+                                <span class="status-pill status-dead" style="font-size: 9px;">LOCKED</span>
+                            {% elif user.email_verified %}
                                 <span class="status-pill status-ok" style="font-size: 9px;">VERIFIED</span>
                             {% else %}
                                 <span class="status-pill status-late" style="font-size: 9px;">UNVERIFIED</span>

@@ -77,6 +77,13 @@ The core feature of CronCraft is monitoring whether external scheduled tasks run
 - **Password Reset**: Standard forgot-password token flow via email.
 - **Profile Settings**: Users can manage their email, username, display name, timezone, password, and preferred date/time formatting.
 - **Password Complexity**: All password entry points (registration, reset, settings) enforce the same rules via a shared `validate_password()` helper in `validators.py`: 8–50 characters, at least one uppercase, one lowercase, one digit, and one special character.
+- **Login Brute-Force Protection** (`auth.py`):
+  - **IP-based rate limiting**: An in-memory tracker blocks an IP address for 15 minutes after 10 failed login attempts within a 15-minute sliding window. Fits the single-process Gunicorn deployment model.
+  - **Account lockout**: After 5 consecutive wrong-password attempts against a specific user, the `is_locked` flag is set, a one-time `lock_token` is generated, and an email is sent with a self-service unlock link.
+  - **Locked behaviour**: Locked users cannot log in even with the correct password. The login form shows a generic "account locked" message.
+  - **Unlock methods**: (1) Email link (`/unlock/<token>`), (2) Admin "Unlock" button on the User Detail page, (3) Password reset — resetting the password also clears the lock.
+  - **Successful login** resets `failed_login_attempts` to 0 and clears the IP block.
+  - **User model fields**: `is_locked` (Boolean, default False), `failed_login_attempts` (Integer, default 0), `lock_token` (String(64), nullable).
 - **Subscriptions & Billing**: Users are assigned to plan tiers (`free`, `pro`, `team`). 
   - `free` tier is limited to 10 jobs, email-only alerts, and no dependency chains.
   - `pro` and `team` tiers unlock Webhook alerts, Slack alerts, and Dependency Chains.
@@ -101,8 +108,9 @@ The core feature of CronCraft is monitoring whether external scheduled tasks run
 Located at `/admin` and restricted to users with `is_admin=True`.
 - **First User Auto-Admin**: The first account registered on a fresh database is automatically granted admin privileges. No manual SQL or CLI commands needed — ideal for self-hosted Docker deployments.
 - **Dashboard**: System-wide statistics on users, jobs, and recent alerts.
-- **User Management**: View, edit (plan, admin status, verification status, email), and delete users (cascade deletes all associated data).
-- **User Detail View**: Shows profile, plan status (with Plan Started, Plan Ends dates from Stripe), grace period status (with amber "PAST DUE" badge if applicable), all jobs with statuses, and recent alerts.
+- **User Management**: View, edit (plan, admin status, verification status, email), and delete users (cascade deletes all associated data). Locked users show a red "LOCKED" badge in the status column of the user list.
+- **User Detail View**: Shows profile, plan status (with Plan Started, Plan Ends dates from Stripe), grace period status (with amber "PAST DUE" badge if applicable), locked status (with red "LOCKED" badge), all jobs with statuses, and recent alerts. Locked users display an "Unlock" action button.
+- **Account Unlock** (`POST /admin/users/<id>/unlock`): Admins can manually unlock a locked account, resetting `is_locked`, `failed_login_attempts`, and `lock_token`.
 - **Impersonation**: Admins can log in as any user to troubleshoot issues, with a "Return to Admin" banner to quickly switch back.
 
 ### 4. Alerting System

@@ -17,6 +17,9 @@ CREATE TABLE users (
     grace_period_end TIMESTAMP NULL,
     api_token_hash  VARCHAR(64) UNIQUE NULL,
     version_check_enabled BOOLEAN DEFAULT TRUE,
+    is_locked       BOOLEAN DEFAULT FALSE,
+    failed_login_attempts INTEGER DEFAULT 0,
+    lock_token      VARCHAR(64) NULL,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -99,3 +102,7 @@ CREATE TABLE alerts (
 
 -- If you are updating an existing database, run these commands:
 
+-- Account lockout columns (2026-05-11)
+ALTER TABLE users ADD COLUMN is_locked BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN failed_login_attempts INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN lock_token VARCHAR(64) NULL;

@@ -1,5 +1,18 @@
 # Changelog
 
+## 20260511.00
+
+### Security
+
+- IP-based rate limiting: blocks an IP for 15 minutes after 10 failed login attempts within a 15-minute window.
+- Account lockout: after 5 consecutive wrong-password attempts against a specific user, the account is locked.
+- Locked accounts receive an email with a one-click self-service unlock link.
+- Locked users cannot log in even with the correct password until unlocked.
+- Three unlock methods: email link, admin "Unlock" button on User Management page, or password reset.
+- Admin User Management page shows a red "LOCKED" badge next to locked usernames and an "Unlock" action button on user detail.
+- Successful login resets the failed attempt counter to zero.
+- Added `is_locked`, `failed_login_attempts`, `lock_token` columns to users table.
+
 ## 20260414.00
 
 ### Features

@@ -179,6 +179,22 @@ def user_delete(id):
     return redirect(url_for('admin.users'))
 
 
+@bp.route('/users/<int:id>/unlock', methods=['POST'])
+@admin_required
+def unlock_user(id):
+    user = User.query.get_or_404(id)
+    if not user.is_locked:
+        flash(f'{user.email} is not locked.', 'info')
+        return redirect(url_for('admin.user_detail', id=user.id))
+
+    user.is_locked = False
+    user.failed_login_attempts = 0
+    user.lock_token = None
+    db.session.commit()
+    flash(f'Account {user.email} has been unlocked.', 'success')
+    return redirect(url_for('admin.user_detail', id=user.id))
+
+
 @bp.route('/users/<int:id>/impersonate', methods=['POST'])
 @admin_required
 def impersonate(id):

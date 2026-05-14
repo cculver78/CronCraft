@@ -25,6 +25,9 @@ class User(UserMixin, db.Model):
     grace_period_end = db.Column(db.DateTime, nullable=True)
     api_token_hash = db.Column(db.String(64), unique=True, nullable=True)
     version_check_enabled = db.Column(db.Boolean, default=True)
+    is_locked = db.Column(db.Boolean, default=False)
+    failed_login_attempts = db.Column(db.Integer, default=0)
+    lock_token = db.Column(db.String(64), nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
 
     teams_owned = db.relationship('Team', backref='owner', lazy=True)
