@@ -1,5 +1,11 @@
 # Changelog
 
+## 20260514.00
+
+### Fixes
+
+- Fixed Alembic "multiple head revisions" error by committing the missing `595160b5843e` (notify_duration_anomaly) migration and re-chaining the account lockout migration to follow it, restoring a linear migration history.
+
 ## 20260511.00
 
 ### Security

@@ -4,7 +4,7 @@
 """Add account lockout columns to users table.
 
 Revision ID: e5f6a7b8c9d0
-Revises: d4e5f6a7b8c9
+Revises: 595160b5843e
 Create Date: 2026-05-11 18:10:00.000000
 
 """
@@ -14,7 +14,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'e5f6a7b8c9d0'
-down_revision = 'd4e5f6a7b8c9'
+down_revision = '595160b5843e'
 branch_labels = None
 depends_on = None
 
